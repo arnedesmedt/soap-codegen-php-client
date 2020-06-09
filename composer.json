@@ -1,5 +1,5 @@
 {
-    "name": "phpro/soap-client",
+    "name": "arnedesmedt/soap-client",
     "description": "A general purpose SoapClient library",
     "keywords": [
         "soap"
