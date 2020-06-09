@@ -230,11 +230,16 @@ class Normalizer
      */
     public static function normalizeDataType(string $type): string
     {
-        $type = self::removeNullable($type);
+        $typeWithoutNull = self::removeNullable($type);
 
-        $searchType = strtolower($type);
+        $searchType = strtolower($typeWithoutNull);
 
-        return array_key_exists($searchType, self::$normalizations) ? self::$normalizations[$searchType] : $type;
+        return (strpos($type, '?') === 0 ? '?' : '') .
+            (
+                array_key_exists($searchType, self::$normalizations)
+                    ? self::$normalizations[$searchType]
+                    : $typeWithoutNull
+            );
     }
 
     public static function isKnownType(string $type): bool
