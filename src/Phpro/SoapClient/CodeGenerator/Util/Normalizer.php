@@ -230,6 +230,8 @@ class Normalizer
      */
     public static function normalizeDataType(string $type): string
     {
+        $type = self::removeNullable($type);
+
         $searchType = strtolower($type);
 
         return array_key_exists($searchType, self::$normalizations) ? self::$normalizations[$searchType] : $type;
@@ -237,6 +239,8 @@ class Normalizer
 
     public static function isKnownType(string $type): bool
     {
+        $type = self::removeNullable($type);
+
         return \in_array($type, self::$normalizations, true);
     }
 
@@ -277,5 +281,16 @@ class Normalizer
         }
 
         return $use;
+    }
+
+    /**
+     * @return false|string
+     */
+    private static function removeNullable(string $type)
+    {
+        if (strpos($type, '?') === 0) {
+            $type = substr($type, 1);
+        }
+        return $type;
     }
 }
