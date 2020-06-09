@@ -281,7 +281,7 @@ class Normalizer
     /**
      * @return false|string
      */
-    private static function removeNullable(string $type)
+    public static function removeNullable(string $type)
     {
         if (strpos($type, '?') === 0) {
             $type = substr($type, 1);
