@@ -74,6 +74,11 @@ class Property
         return '\\'.$this->namespace.'\\'.Normalizer::normalizeClassname($this->type);
     }
 
+    public function isNullable(): bool
+    {
+        return strpos($this->type, '?') === 0;
+    }
+
     /**
      * @return non-empty-string|null
      */
