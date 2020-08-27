@@ -2,9 +2,12 @@
 
 namespace Phpro\SoapClient\CodeGenerator;
 
+use _HumbugBox8713d481528d\Monolog\Logger;
 use Phpro\SoapClient\CodeGenerator\Context\ClientFactoryContext;
+use Phpro\SoapClient\Event\Subscriber\LogSubscriber;
 use Phpro\SoapClient\Soap\Driver\ExtSoap\ExtSoapEngineFactory;
 use Phpro\SoapClient\Soap\Driver\ExtSoap\ExtSoapOptions;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Laminas\Code\Generator\ClassGenerator;
 use Laminas\Code\Generator\FileGenerator;
@@ -23,6 +26,10 @@ class ClientFactoryGenerator implements GeneratorInterface
         ->withClassMap(%2\$s::getCollection())
 );
 \$eventDispatcher = new EventDispatcher();
+
+if(\$logger) {
+    \$eventDispatcher->addSubscriber(new LogSubscriber(\$logger));
+}
 
 return new %1\$s(\$engine, \$eventDispatcher);
 
@@ -43,6 +50,8 @@ BODY;
         $class->addUse(EventDispatcher::class);
         $class->addUse(ExtSoapEngineFactory::class);
         $class->addUse(ExtSoapOptions::class);
+        $class->addUse(LogSubscriber::class);
+        $class->addUse(LoggerInterface::class);
         $class->addMethodFromGenerator(
             MethodGenerator::fromArray(
                 [
@@ -54,6 +63,11 @@ BODY;
                         [
                             'name' => 'wsdl',
                             'type' => 'string',
+                        ],
+                        [
+                            'name' => 'logger',
+                            'type' => LoggerInterface::class,
+                            'defaultvalue' => null,
                         ],
                     ],
                 ]

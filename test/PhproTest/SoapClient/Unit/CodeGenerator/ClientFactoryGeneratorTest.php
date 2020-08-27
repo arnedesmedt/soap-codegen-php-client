@@ -23,17 +23,23 @@ use App\Classmap\SomeClassmap;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Phpro\SoapClient\Soap\Driver\ExtSoap\ExtSoapEngineFactory;
 use Phpro\SoapClient\Soap\Driver\ExtSoap\ExtSoapOptions;
+use Phpro\SoapClient\Event\Subscriber\LogSubscriber;
+use Psr\Log\LoggerInterface;
 
 class MyclientFactory
 {
 
-    public static function factory(string \$wsdl) : \App\Client\Myclient
+    public static function factory(string \$wsdl, \Psr\Log\LoggerInterface \$logger = null) : \App\Client\Myclient
     {
         \$engine = ExtSoapEngineFactory::fromOptions(
             ExtSoapOptions::defaults(\$wsdl, [])
                 ->withClassMap(SomeClassmap::getCollection())
         );
         \$eventDispatcher = new EventDispatcher();
+
+        if(\$logger) {
+            \$eventDispatcher->addSubscriber(new LogSubscriber(\$logger));
+        }
 
         return new Myclient(\$engine, \$eventDispatcher);
     }
