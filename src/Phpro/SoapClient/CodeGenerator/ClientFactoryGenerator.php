@@ -7,6 +7,8 @@ use Phpro\SoapClient\Caller\EventDispatchingCaller;
 use Phpro\SoapClient\CodeGenerator\Context\ClientFactoryContext;
 use Phpro\SoapClient\Soap\DefaultEngineFactory;
 use Soap\ExtSoapEngine\ExtSoapOptions;
+use Phpro\SoapClient\Event\Subscriber\LogSubscriber;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Laminas\Code\Generator\ClassGenerator;
 use Laminas\Code\Generator\FileGenerator;
@@ -27,6 +29,10 @@ class ClientFactoryGenerator implements GeneratorInterface
 
 \$eventDispatcher = new EventDispatcher();
 \$caller = new EventDispatchingCaller(new EngineCaller(\$engine), \$eventDispatcher);
+
+if(\$logger) {
+    \$eventDispatcher->addSubscriber(new LogSubscriber(\$logger));
+}
 
 return new %1\$s(\$caller);
 
@@ -49,6 +55,8 @@ BODY;
         $class->addUse(ExtSoapOptions::class);
         $class->addUse(EventDispatchingCaller::class);
         $class->addUse(EngineCaller::class);
+        $class->addUse(LogSubscriber::class);
+        $class->addUse(LoggerInterface::class);
         $class->addMethodFromGenerator(
             MethodGenerator::fromArray(
                 [
@@ -60,6 +68,11 @@ BODY;
                         [
                             'name' => 'wsdl',
                             'type' => 'string',
+                        ],
+                        [
+                            'name' => 'logger',
+                            'type' => LoggerInterface::class,
+                            'defaultvalue' => null,
                         ],
                     ],
                 ]
