@@ -17,6 +17,11 @@ class LogSubscriber implements EventSubscriberInterface
     private $logger;
 
     /**
+     * @var float
+     */
+    private $requestTime;
+
+    /**
      * Constructor
      *
      * @param LoggerInterface $logger
@@ -31,11 +36,15 @@ class LogSubscriber implements EventSubscriberInterface
      */
     public function onClientRequest(RequestEvent $event)
     {
-        $this->logger->info(sprintf(
-            '[phpro/soap-client] request: call "%s" with params %s',
-            $event->getMethod(),
-            print_r($event->getRequest(), true)
-        ));
+        $this->requestTime = microtime(true);
+
+        $this->logger->info(
+            '[phpro/soap-client] request "{method}"',
+            [
+                'method' => $event->getMethod(),
+                'request' => $event->getRequest()
+            ]
+        );
     }
 
     /**
@@ -43,10 +52,16 @@ class LogSubscriber implements EventSubscriberInterface
      */
     public function onClientResponse(ResponseEvent $event)
     {
-        $this->logger->info(sprintf(
-            '[phpro/soap-client] response: %s',
-            print_r($event->getResponse(), true)
-        ));
+        $this->logger->info(
+            '[phpro/soap-client] response "{method}"',
+            [
+                'method' => $event->getRequestEvent()->getMethod(),
+                'response' => $event->getResponse(),
+                'duration' => $this->requestTime
+                    ? round(microtime(true) - $this->requestTime, 3)
+                    : null
+            ]
+        );
     }
 
     /**
@@ -54,12 +69,17 @@ class LogSubscriber implements EventSubscriberInterface
      */
     public function onClientFault(FaultEvent $event)
     {
-        $this->logger->error(sprintf(
-            '[phpro/soap-client] fault "%s" for request "%s" with params %s',
-            $event->getSoapException()->getMessage(),
-            $event->getRequestEvent()->getMethod(),
-            print_r($event->getRequestEvent()->getRequest(), true)
-        ));
+        $this->logger->info(
+            '[phpro/soap-client] fault "{fault}" for "{method}"',
+            [
+                'fault' => $event->getSoapException()->getMessage(),
+                'method' => $event->getRequestEvent()->getMethod(),
+                'request' => $event->getRequestEvent()->getRequest(),
+                'duration' => $this->requestTime
+                    ? round(microtime(true) - $this->requestTime, 3)
+                    : null
+            ]
+        );
     }
 
     /**
@@ -68,9 +88,9 @@ class LogSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return array(
-            Events::REQUEST  => 'onClientRequest',
-            Events::RESPONSE => 'onClientResponse',
-            Events::FAULT    => 'onClientFault'
+            RequestEvent::class  => 'onClientRequest',
+            ResponseEvent::class => 'onClientResponse',
+            FaultEvent::class => 'onClientFault'
         );
     }
 }
