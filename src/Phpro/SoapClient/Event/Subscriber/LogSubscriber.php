@@ -87,9 +87,9 @@ class LogSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return array(
-            Events::REQUEST  => 'onClientRequest',
-            Events::RESPONSE => 'onClientResponse',
-            Events::FAULT => 'onClientFault',
+            RequestEvent::class  => 'onClientRequest',
+            ResponseEvent::class => 'onClientResponse',
+            FaultEvent::class    => 'onClientFault',
         );
     }
 }
