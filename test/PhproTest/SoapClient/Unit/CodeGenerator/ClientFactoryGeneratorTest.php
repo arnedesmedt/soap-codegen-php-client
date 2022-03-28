@@ -22,7 +22,6 @@ namespace App\Client;
 use App\Client\Myclient;
 use App\Classmap\SomeClassmap;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-<<<<<<< HEAD
 use Phpro\SoapClient\Soap\DefaultEngineFactory;
 use Soap\ExtSoapEngine\ExtSoapOptions;
 use Phpro\SoapClient\Event\Subscriber\LogSubscriber;
