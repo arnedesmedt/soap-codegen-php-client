@@ -22,29 +22,29 @@ namespace App\Client;
 use App\Client\Myclient;
 use App\Classmap\SomeClassmap;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use Phpro\SoapClient\Soap\DefaultEngineFactory;
+use Phpro\SoapClient\Soap\CombellDefaultEngineFactory;
 use Soap\ExtSoapEngine\ExtSoapOptions;
-use Phpro\SoapClient\Event\Subscriber\LogSubscriber;
 use Phpro\SoapClient\Caller\EventDispatchingCaller;
 use Phpro\SoapClient\Caller\EngineCaller;
+use Phpro\SoapClient\Event\Subscriber\LogSubscriber;
 use Psr\Log\LoggerInterface;
 
 class MyclientFactory
 {
-    public static function factory(string \$wsdl, \Psr\Log\LoggerInterface \$logger = null) : \App\Client\Myclient
+    public static function factory(string \$wsdl, \Symfony\Component\EventDispatcher\EventDispatcher \$eventDispatcher = null, \Psr\Log\LoggerInterface \$logger = null) : \App\Client\Myclient
     {
-        \$engine = DefaultEngineFactory::create(
+        \$engine = CombellDefaultEngineFactory::create(
             ExtSoapOptions::defaults(\$wsdl, [])
                 ->withClassMap(SomeClassmap::getCollection())
         );
 
-        \$eventDispatcher = new EventDispatcher();
+        \$eventDispatcher ??= new EventDispatcher();
         \$caller = new EventDispatchingCaller(new EngineCaller(\$engine), \$eventDispatcher);
 
         if(\$logger) {
             \$eventDispatcher->addSubscriber(new LogSubscriber(\$logger));
         }
-        
+
         return new Myclient(\$caller);
     }
 }

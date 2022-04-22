@@ -5,7 +5,7 @@ namespace Phpro\SoapClient\CodeGenerator;
 use Phpro\SoapClient\Caller\EngineCaller;
 use Phpro\SoapClient\Caller\EventDispatchingCaller;
 use Phpro\SoapClient\CodeGenerator\Context\ClientFactoryContext;
-use Phpro\SoapClient\Soap\DefaultEngineFactory;
+use Phpro\SoapClient\Soap\CombellDefaultEngineFactory;
 use Soap\ExtSoapEngine\ExtSoapOptions;
 use Phpro\SoapClient\Event\Subscriber\LogSubscriber;
 use Psr\Log\LoggerInterface;
@@ -22,12 +22,12 @@ use Laminas\Code\Generator\MethodGenerator;
 class ClientFactoryGenerator implements GeneratorInterface
 {
     const BODY = <<<BODY
-\$engine = DefaultEngineFactory::create(
+\$engine = CombellDefaultEngineFactory::create(
     ExtSoapOptions::defaults(\$wsdl, [])
         ->withClassMap(%2\$s::getCollection())
 );
 
-\$eventDispatcher = new EventDispatcher();
+\$eventDispatcher ??= new EventDispatcher();
 \$caller = new EventDispatchingCaller(new EngineCaller(\$engine), \$eventDispatcher);
 
 if(\$logger) {
@@ -51,7 +51,7 @@ BODY;
         $class->addUse($context->getClientFqcn());
         $class->addUse($context->getClassmapFqcn());
         $class->addUse(EventDispatcher::class);
-        $class->addUse(DefaultEngineFactory::class);
+        $class->addUse(CombellDefaultEngineFactory::class);
         $class->addUse(ExtSoapOptions::class);
         $class->addUse(EventDispatchingCaller::class);
         $class->addUse(EngineCaller::class);
@@ -68,6 +68,11 @@ BODY;
                         [
                             'name' => 'wsdl',
                             'type' => 'string',
+                        ],
+                        [
+                            'name' => 'eventDispatcher',
+                            'type' => EventDispatcher::class,
+                            'defaultvalue' => null,
                         ],
                         [
                             'name' => 'logger',
