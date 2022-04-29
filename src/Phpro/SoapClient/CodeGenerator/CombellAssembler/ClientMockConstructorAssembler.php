@@ -58,6 +58,26 @@ final class ClientMockConstructorAssembler extends ClientConstructorAssembler
                     ]
                 )
             );
+            $class->addPropertyFromGenerator(
+                PropertyGenerator::fromArray(
+                    [
+                        'name' => 'mocks',
+                        'visibility' => PropertyGenerator::VISIBILITY_PROTECTED,
+                        'defaultvalue' => [],
+                        'static' => true,
+                        'docblock' => DocBlockGeneratorFactory::fromArray(
+                            [
+                                'tags' => [
+                                    [
+                                        'name' => 'var',
+                                        'description' => 'array<string, array<array<string, array<mixed>>>>',
+                                    ],
+                                ],
+                            ]
+                        ),
+                    ]
+                )
+            );
             $class->addMethodFromGenerator(
                 MethodGenerator::fromArray(
                     [
