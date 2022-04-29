@@ -14,7 +14,7 @@
     "require": {
         "php": "^8.0",
         "ext-simplexml": "*",
-        "arnedesmedt/client-mock": "^0.1.0",
+        "arnedesmedt/client-mock": "~0.1",
         "arnedesmedt/json-immutable-objects": "~0.1",
         "laminas/laminas-code": "^4.4.0",
         "php-soap/engine": "^1.0",
