@@ -14,7 +14,7 @@
     "require": {
         "php": "~8.1.0 || ~8.2.0 || ~8.3.0",
         "ext-simplexml": "*",
-        "arnedesmedt/client-mock": "^0.1.0",
+        "arnedesmedt/client-mock": "~0.1",
         "arnedesmedt/json-immutable-objects": "~0.1",
         "azjezz/psl": "^2.1",
         "laminas/laminas-code": "^4.8.0",
