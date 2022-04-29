@@ -62,7 +62,7 @@ final class ClientMockConstructorAssembler extends ClientConstructorAssembler
                 PropertyGenerator::fromArray(
                     [
                         'name' => 'mocks',
-                        'visibility' => PropertyGenerator::VISIBILITY_PRIVATE,
+                        'visibility' => PropertyGenerator::VISIBILITY_PROTECTED,
                         'defaultvalue' => [],
                         'static' => true,
                         'docblock' => DocBlockGeneratorFactory::fromArray(
