@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Phpro\SoapClient\Type;
 
 use EventEngine\JsonSchema\JsonSchemaAwareRecord;
@@ -7,7 +9,7 @@ use EventEngine\JsonSchema\JsonSchemaAwareRecord;
 trait FactoryFromArray
 {
     use JsonSchemaAwareRecordLogic;
-    
+
     /**
      * @return class-string<JsonSchemaAwareRecord>
      */
