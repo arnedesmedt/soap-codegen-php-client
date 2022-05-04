@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Phpro\SoapClient\Util;
+namespace Phpro\SoapClient\Type;
 
 trait JsonSchemaAwareRecordLogic
 {
