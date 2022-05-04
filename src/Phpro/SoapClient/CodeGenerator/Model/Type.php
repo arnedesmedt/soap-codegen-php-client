@@ -104,10 +104,10 @@ class Type
      *
      * @return SplFileInfo
      */
-    public function getFileInfo(string $destination): SplFileInfo
+    public function getFileInfo(string $destination, string $suffix = ''): SplFileInfo
     {
         $name = Normalizer::normalizeClassname($this->getName());
-        $path = rtrim($destination, '/\\').'/'.$name.'.php';
+        $path = rtrim($destination, '/\\').'/'.$name.$suffix.'.php';
 
         return new SplFileInfo($path);
     }
