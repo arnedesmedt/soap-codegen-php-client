@@ -8,8 +8,6 @@ use EventEngine\JsonSchema\JsonSchemaAwareRecord;
 
 trait FactoryFromArray
 {
-    use JsonSchemaAwareRecordLogic;
-
     /**
      * @return class-string<JsonSchemaAwareRecord>
      */
