@@ -32,8 +32,10 @@ final class FactoryAssembler implements AssemblerInterface
         $class = $context->getClass();
 
         try {
-            $class->setName($class->getName() . 'Factory');
+            $originalName = $class->getName();
+            $class->setName($originalName . 'Factory');
             $class->addTrait(FactoryFromArray::class);
+            
             $class->addMethodFromGenerator(
                 MethodGenerator::fromArray(
                     [
@@ -42,9 +44,9 @@ final class FactoryAssembler implements AssemblerInterface
                         'name' => 'modelClass',
                         'returnType' => 'string',
                         'body' => sprintf(
-                            'return %s\%s::class',
+                            'return %s\%s::class;',
                             str_replace($class->getNamespaceName(), 'Factory', 'Type'),
-                            $class->getName()
+                            $originalName
                         ),
                     ]
                 )

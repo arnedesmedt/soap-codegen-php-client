@@ -46,6 +46,11 @@ interface ConfigInterface
     /**
      * @return string
      */
+    public function getTypeSuffix();
+
+    /**
+     * @return string
+     */
     public function getClassMapName() : string;
 
     /**

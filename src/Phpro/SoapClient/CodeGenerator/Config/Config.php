@@ -31,6 +31,11 @@ final class Config implements ConfigInterface
     /**
      * @var string
      */
+    protected $typeSuffix = '';
+
+    /**
+     * @var string
+     */
     protected $clientNamespace = '';
 
     /**
@@ -102,6 +107,26 @@ final class Config implements ConfigInterface
     public function setTypeNamespace($namespace): self
     {
         $this->typeNamespace = Normalizer::normalizeNamespace($namespace);
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTypeSuffix(): string
+    {
+        return $this->typeSuffix;
+    }
+
+    /**
+     * @param string $suffix
+     *
+     * @return Config
+     */
+    public function setTypeSuffix($suffix): self
+    {
+        $this->typeSuffix = $suffix;
 
         return $this;
     }
