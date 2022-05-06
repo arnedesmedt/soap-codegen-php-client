@@ -12,7 +12,7 @@ use Phpro\SoapClient\CodeGenerator\Context\ContextInterface;
 use Phpro\SoapClient\CodeGenerator\Context\TypeContext;
 use Phpro\SoapClient\CodeGenerator\LaminasCodeFactory\DocBlockGeneratorFactory;
 use Phpro\SoapClient\Exception\AssemblerException;
-use Phpro\SoapClient\Type\FactoryFromArray;
+use ADS\JsonImmutableObjects\FactoryFromArray;
 
 final class FactoryAssembler implements AssemblerInterface
 {
