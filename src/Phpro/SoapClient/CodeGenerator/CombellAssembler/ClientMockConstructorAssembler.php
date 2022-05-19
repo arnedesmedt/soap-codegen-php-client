@@ -82,7 +82,7 @@ final class ClientMockConstructorAssembler extends ClientConstructorAssembler
                 MethodGenerator::fromArray(
                     [
                         'name' => 'factoryClass',
-                        'visibility' => MethodGenerator::VISIBILITY_PROTECTED,
+                        'visibility' => MethodGenerator::VISIBILITY_PUBLIC,
                         'static' => true,
                         'body' => sprintf('return %s::class;', $clientFactoryName),
                         'returntype' => 'string',
@@ -93,7 +93,7 @@ final class ClientMockConstructorAssembler extends ClientConstructorAssembler
                 MethodGenerator::fromArray(
                     [
                         'name' => 'clientClass',
-                        'visibility' => MethodGenerator::VISIBILITY_PROTECTED,
+                        'visibility' => MethodGenerator::VISIBILITY_PUBLIC,
                         'static' => true,
                         'body' => sprintf('return %s::class;', $clientName),
                         'returntype' => 'string',
