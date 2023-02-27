@@ -51,14 +51,6 @@ final class ClientMethodAssembler extends \Phpro\SoapClient\CodeGenerator\Assemb
                 $this->generateSingleArgumentDocblock($context);
             $methodBody = $this->generateMethodBody($class, $param, $method, $isVoid);
 
-//            $returnType = ltrim($method->getReturnType(), '\\');
-//            $nameSpacedReturnType = ltrim($method->getNamespacedReturnType(), '\\');
-//
-//            $class->addUse($nameSpacedReturnType);
-//            if ($param) {
-//                $class->addUse($param->getType());
-//            }
-
             $class->addMethodFromGenerator(
                 MethodGenerator::fromArray(
                     [
