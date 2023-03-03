@@ -39,7 +39,7 @@ final class DefaultAssembler implements AssemblerInterface
                         'static' => true,
                         'visibility' => MethodGenerator::VISIBILITY_PUBLIC,
                         'name' => 'default',
-                        'returnType' => $originalName,
+                        'returnType' => $typeNamespace . '\\' . $originalName,
                         'body' => sprintf(
                             'throw new RunTimeException(\'Default object for \\\'%s\\\' not implemented yet.\');',
                             $originalName
