@@ -26,7 +26,6 @@ final class UseDefaultAssembler implements AssemblerInterface
     public function assemble(ContextInterface $context): void
     {
         $class = $context->getClass();
-        var_dump($class->getNamespaceName());
 
         try {
             $defaultNameSpace = str_replace('Type', 'Default', $class->getNamespaceName() ?? '');
