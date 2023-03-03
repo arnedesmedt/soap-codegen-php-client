@@ -26,14 +26,18 @@ final class UseDefaultAssembler implements AssemblerInterface
     public function assemble(ContextInterface $context): void
     {
         $class = $context->getClass();
+        var_dump($class->getNamespaceName());
 
         try {
             $defaultNameSpace = str_replace('Type', 'Default', $class->getNamespaceName() ?? '');
-            $assembler = new UseAssembler($defaultNameSpace . '\\' . $class->getName() . 'Default');
+            $trait = $defaultNameSpace . '\\' . $class->getName() . 'Default';
+            $assembler = new UseAssembler($trait);
 
             if ($assembler->canAssemble($context)) {
                 $assembler->assemble($context);
             }
+
+            $class->addTrait($class->getName() . 'Default');
             // phpcs:ignore SlevomatCodingStandard.Exceptions.ReferenceThrowableOnly.ReferencedGeneralException
         } catch (Exception $e) {
             throw AssemblerException::fromException($e);
