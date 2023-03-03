@@ -26,7 +26,7 @@ use function Psl\Type\non_empty_string;
 class GenerateTypesTraitCommand extends Command
 {
 
-    const COMMAND_NAME = 'generate:typestrait';
+    const COMMAND_NAME = 'generate:types:trait';
 
     /**
      * @var Filesystem

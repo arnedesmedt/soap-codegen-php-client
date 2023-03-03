@@ -41,6 +41,7 @@ class Application extends SymfonyApplication
         $commands[] = new Command\GenerateClassmapCommand($filesystem);
         $commands[] = new Command\GenerateClientCommand($filesystem);
         $commands[] = new Command\GenerateClientInterfaceCommand($filesystem);
+        $commands[] = new Command\GenerateTypesTraitCommand($filesystem);
         $commands[] = new Command\GenerateConfigCommand($filesystem);
         $commands[] = new Command\GenerateClientFactoryCommand($filesystem);
         $commands[] = new Command\WizardCommand();
