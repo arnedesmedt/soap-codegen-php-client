@@ -41,7 +41,7 @@ final class DefaultAssembler implements AssemblerInterface
                         'name' => 'default',
                         'returnType' => $originalName,
                         'body' => sprintf(
-                            'throw new RunTimeException(\'Default object for \'%s\' not implemented yet.\');',
+                            'throw new RunTimeException(\'Default object for \\\'%s\\\' not implemented yet.\');',
                             $originalName
                         ),
                     ]
