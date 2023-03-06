@@ -36,11 +36,6 @@ class GenerateClientInterfaceCommand extends Command
     private $filesystem;
 
     /**
-     * @var OutputInterface
-     */
-    private $output;
-
-    /**
      * @param Filesystem $filesystem
      */
     public function __construct(Filesystem $filesystem)
@@ -70,7 +65,6 @@ class GenerateClientInterfaceCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->output = $output;
         $io = new SymfonyStyle($input, $output);
 
         $config = $this->getConfigHelper()->load($input);
@@ -112,29 +106,6 @@ class GenerateClientInterfaceCommand extends Command
     {
         $code = $generator->generate($file, $client);
         $this->filesystem->putFileContents($path, $code);
-    }
-
-    /**
-     * Try to create a class for a type.
-     *
-     * @param ClientGenerator $generator
-     * @param Client $client
-     * @param string $path
-     * @return bool
-     */
-    protected function handleClient(ClientGenerator $generator, Client $client, string $path): bool
-    {
-        // Try to create a blanco class:
-        try {
-            $file = new FileGenerator();
-            $this->generateClient($file, $generator, $client, $path);
-        } catch (\Exception $e) {
-            $this->output->writeln('<fg=red>'.$e->getMessage().'</fg=red>');
-
-            return false;
-        }
-
-        return true;
     }
 
     /**
