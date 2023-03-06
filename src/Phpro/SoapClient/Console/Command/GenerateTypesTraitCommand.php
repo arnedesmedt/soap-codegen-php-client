@@ -134,6 +134,10 @@ class GenerateTypesTraitCommand extends Command
         Type $type,
         SplFileInfo $fileInfo
     ) {
+        if ($this->filesystem->fileExists($fileInfo->getPathname())) {
+            return;
+        }
+
         $code = $generator->generate($file, $type);
         $this->filesystem->putFileContents($fileInfo->getPathname(), $code);
     }
