@@ -88,7 +88,7 @@ BODY;
             MethodGenerator::fromArray(
                 [
                     'name' => 'createMock',
-                    'stattic' => true,
+                    'static' => true,
                     'body' => sprintf('return new %sMock(new \Phpro\SoapClient\Mock\MockPersister());', $context->getClientName()),
                     'returnType' => sprintf('%sMock', $context->getClientName()),
                 ],
