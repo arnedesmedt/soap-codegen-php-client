@@ -90,7 +90,7 @@ BODY;
                     'name' => 'createMock',
                     'static' => true,
                     'body' => sprintf('return new %sMock(new \Phpro\SoapClient\Mock\MockPersister());', $context->getClientName()),
-                    'returnType' => sprintf('%sMock', $context->getClientName()),
+                    'returnType' => sprintf('%sMock', $context->getClientNamespace() . '\\' . $context->getClientName()),
                 ],
             ),
         );
