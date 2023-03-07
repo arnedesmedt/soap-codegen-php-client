@@ -4,6 +4,7 @@ namespace Phpro\SoapClient\Mock;
 
 use EventEngine\Data\ImmutableRecord;
 use EventEngine\Data\ImmutableRecordLogic;
+use RuntimeException;
 
 class MockMethod implements ImmutableRecord
 {
@@ -32,6 +33,16 @@ class MockMethod implements ImmutableRecord
 
     public function addReturnValue(ImmutableRecord $return): self
     {
+        $parameterType = $this->parameterType();
+        /** @var class-string<ImmutableRecord> $responseType */
+        $responseType = sprintf('%sResponse', $parameterType);
+
+        $return = $responseType::fromRecordData(
+            [
+                sprintf('%sResult', explode('\\', $parameterType)[0]) => $return,
+            ]
+        );
+
         return $this->with(['returnValues' => [...$this->returnValues, $return]]);
     }
 
@@ -44,6 +55,16 @@ class MockMethod implements ImmutableRecord
     public function parameters(): array
     {
         return $this->parameters;
+    }
+
+    /** @return class-string<ImmutableRecord> */
+    private function parameterType(): string
+    {
+        if (empty($this->parameters)) {
+            throw new RuntimeException('No parameters found');
+        }
+
+        return $this->parameters[0]::class;
     }
 
     /** @return array<ImmutableRecord> */
