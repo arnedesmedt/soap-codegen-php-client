@@ -6,29 +6,32 @@ use EventEngine\Data\ImmutableRecord;
 use EventEngine\Data\ImmutableRecordLogic;
 use RuntimeException;
 
-class MockMethod implements ImmutableRecord
+class MockMethod
 {
-    use ImmutableRecordLogic;
-
-    private string $method;
     private array $parameters = [];
     private array $returnValues = [];
 
-    /** @return array<string, class-string> */
-    private static function arrayPropItemTypeMap(): array
-    {
-        return [
-            'parameters' => ImmutableRecord::class,
-            'returnValues' => ImmutableRecord::class,
-        ];
+    public function __construct(
+        private string $method,
+    ) {
     }
 
     public function merge(MockMethod $lastCall): self
     {
-        return $this->with([
-            'parameters' => [...$this->parameters, ...$lastCall->parameters()],
-            'returnValues' => [...$this->returnValues, ...$lastCall->returnValues()],
-        ]);
+        if ($lastCall->method() !== $this->method) {
+            throw new RuntimeException('Cannot merge calls with different methods');
+        }
+
+        $this->parameters = [...$this->parameters, ...$lastCall->parameters()];
+        $this->returnValues = [...$this->returnValues, ...$lastCall->returnValues()];
+
+        return $this;
+    }
+
+    public function addParameter(ImmutableRecord $parameter): self
+    {
+        $this->parameters[] = $parameter;
+        return $this;
     }
 
     public function addReturnValue(ImmutableRecord $return): self
@@ -43,7 +46,19 @@ class MockMethod implements ImmutableRecord
             ]
         );
 
-        return $this->with(['returnValues' => [...$this->returnValues, $return]]);
+        $this->returnValues[] = $return;
+
+        return $this;
+    }
+
+    /** @return class-string<ImmutableRecord> */
+    private function parameterType(): string
+    {
+        if (empty($this->parameters)) {
+            throw new RuntimeException('No parameters found');
+        }
+
+        return $this->parameters[0]::class;
     }
 
     public function method(): string
@@ -55,16 +70,6 @@ class MockMethod implements ImmutableRecord
     public function parameters(): array
     {
         return $this->parameters;
-    }
-
-    /** @return class-string<ImmutableRecord> */
-    private function parameterType(): string
-    {
-        if (empty($this->parameters)) {
-            throw new RuntimeException('No parameters found');
-        }
-
-        return $this->parameters[0]::class;
     }
 
     /** @return array<ImmutableRecord> */

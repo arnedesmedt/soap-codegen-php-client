@@ -20,12 +20,7 @@ class MockPersister
             throw new RuntimeException('You must call withReturnValue() after calling a method.');
         }
 
-        $this->lastCall = MockMethod::fromArray(
-            [
-                'method' => $method,
-                'parameters' => [$request],
-            ],
-        );
+        $this->lastCall = (new MockMethod($method))->addParameter($request);
 
         return $this;
     }
