@@ -61,7 +61,7 @@ final class ClientMockMethodAssembler extends ClientMethodAssembler
                         'parameters' => $param === null ? [] : [$param],
                         'visibility' => MethodGenerator::VISIBILITY_PUBLIC,
                         'body' => $methodBody,
-                        'returntype' => MockPersister::class,
+                        'returntype' => 'self',
                         'docblock' => $docblock,
                     ]
                 )
@@ -82,7 +82,7 @@ final class ClientMockMethodAssembler extends ClientMethodAssembler
     private function generateMethodBody(ClassGenerator $class, ?ParameterGenerator $param, ClientMethod $method): string
     {
         return sprintf(
-            'return ($this->persister)(\'%s\', %s);',
+            '($this->persister)(\'%s\', %s); return $this;',
             $method->getMethodName(),
             $param === null
                 ? 'new '.$this->generateClassNameAndAddImport(MultiArgumentRequest::class, $class).'([])'

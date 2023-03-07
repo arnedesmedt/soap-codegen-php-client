@@ -3,9 +3,7 @@
 namespace Phpro\SoapClient\Mock;
 
 use EventEngine\Data\ImmutableRecord;
-use Phpro\SoapClient\Caller\Caller;
 use Phpro\SoapClient\Type\RequestInterface;
-use Phpro\SoapClient\Type\ResultInterface;
 use RuntimeException;
 
 class MockPersister
@@ -13,14 +11,6 @@ class MockPersister
     private MockMethod|null $lastCall = null;
     /** @var array<MockMethod> */
     private array $calls = [];
-    private object|null $client = null;
-
-    public function setClient(object $client): self
-    {
-        $this->client = $client;
-
-        return $this;
-    }
 
     public function __invoke(string $method, RequestInterface $request): self
     {
@@ -40,7 +30,7 @@ class MockPersister
         return $this;
     }
 
-    public function withReturnValue(ImmutableRecord $return): object
+    public function withReturnValue(ImmutableRecord $return): void
     {
         assert($this->lastCall instanceof MockMethod);
 
@@ -53,12 +43,6 @@ class MockPersister
         $this->calls[$lastCall->method()] = $lastCall;
 
         $this->lastCall = null;
-
-        if ($this->client === null) {
-            throw new RuntimeException('You must call setClient() before calling a method.');
-        }
-
-        return $this->client;
     }
 
     /** @return array<MockMethod> */
