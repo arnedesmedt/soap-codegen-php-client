@@ -89,7 +89,7 @@ BODY;
                 [
                     'name' => 'createMock',
                     'static' => true,
-                    'body' => sprintf('return new %sMock(new \Phpro\SoapClient\Mock\MockPersister());', $context->getClientName()),
+                    'body' => sprintf('return new %sMock(new \ADS\ClientMock\MockPersister(new \Phpro\SoapClient\Mock\SoapReturnValueTransformer()));', $context->getClientName()),
                     'returnType' => sprintf('%sMock', $context->getClientNamespace() . '\\' . $context->getClientName()),
                 ],
             ),
