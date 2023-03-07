@@ -16,9 +16,10 @@ trait MockLogic
         return $this->persister->calls();
     }
 
-    public function withReturnValue(ImmutableRecord $immutableRecord): self
+    /** @param ImmutableRecord|array<ImmutableRecord> $returnValue */
+    public function withReturnValue(ImmutableRecord|array $returnValue): self
     {
-        $this->persister->withReturnValue($immutableRecord);
+        $this->persister->withReturnValue($returnValue);
 
         return $this;
     }

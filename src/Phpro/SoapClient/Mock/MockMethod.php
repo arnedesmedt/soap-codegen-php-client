@@ -34,19 +34,24 @@ class MockMethod
         return $this;
     }
 
-    public function addReturnValue(ImmutableRecord $return): self
+    /** @param ImmutableRecord|array<ImmutableRecord> $returnValue */
+    public function addReturnValue(ImmutableRecord|array $returnValue): self
     {
         $parameterType = $this->parameterType();
         /** @var class-string<ImmutableRecord> $responseType */
         $responseType = sprintf('%sResponse', $parameterType);
 
-        $return = $responseType::fromRecordData(
+        if (is_array($returnValue)) {
+            $returnValue = ['item' => $responseType::fromArray($returnValue)];
+        }
+
+        $returnValue = $responseType::fromRecordData(
             [
-                sprintf('%sResult', explode('\\', $parameterType)[0]) => $return,
+                sprintf('%sResult', explode('\\', $parameterType)[0]) => $returnValue,
             ]
         );
 
-        $this->returnValues[] = $return;
+        $this->returnValues[] = $returnValue;
 
         return $this;
     }

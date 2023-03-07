@@ -83,7 +83,7 @@ final class ClientMockMethodAssembler extends ClientMethodAssembler
     {
         return sprintf(
             '($this->persister)(\'%s\', %s); return $this;',
-            $method->getMethodName(),
+            StringUtil::camelize($method->getMethodName()),
             $param === null
                 ? 'new '.$this->generateClassNameAndAddImport(MultiArgumentRequest::class, $class).'([])'
                 : '$'.$param->getName()
