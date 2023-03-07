@@ -84,6 +84,17 @@ BODY;
             )
         );
 
+        $class->addMethodFromGenerator(
+            MethodGenerator::fromArray(
+                [
+                    'name' => 'createMock',
+                    'stattic' => true,
+                    'body' => sprintf('return new %sMock(new \Phpro\SoapClient\Mock\MockPersister());', $context->getClientName()),
+                    'returnType' => sprintf('%sMock', $context->getClientName()),
+                ],
+            ),
+        );
+
         $file->setClass($class);
 
         return $file->generate();
