@@ -10,11 +10,13 @@ use RuntimeException;
 class SoapReturnValueTransformer implements ReturnValueTransformer
 {
     /**
-     * @param ImmutableRecord|array<ImmutableRecord> $returnValue
-     * @return ImmutableRecord|array<ImmutableRecord>
+     * @param ImmutableRecord|array<ImmutableRecord>|bool $returnValue
+     * @return ImmutableRecord|array<ImmutableRecord>|bool
      */
-    public function __invoke(ImmutableRecord|array $returnValue, MockMethod|null $method = null): ImmutableRecord|array
-    {
+    public function __invoke(
+        ImmutableRecord|array|bool $returnValue,
+        MockMethod|null $method = null,
+    ): ImmutableRecord|array|bool {
         if ($method === null) {
             throw new RuntimeException('No method found.');
         }
