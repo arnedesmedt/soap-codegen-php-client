@@ -7,7 +7,7 @@ use ADS\ClientMock\ReturnValueTransformer;
 use EventEngine\Data\ImmutableRecord;
 use RuntimeException;
 
-class SoapReturnValueTransformer implements ReturnValueTransformer
+abstract class SoapReturnValueTransformer implements ReturnValueTransformer
 {
     /**
      * @param ImmutableRecord|array<ImmutableRecord>|bool $returnValue
@@ -42,24 +42,24 @@ class SoapReturnValueTransformer implements ReturnValueTransformer
 
         /** @var class-string<ImmutableRecord> $responseType */
         $responseType = sprintf('%sResponse', $parameterType);
+        $resultType = sprintf('%sResult', $parameterName);
 
         if (is_array($returnValue)) {
-            $returnValue = array_map(
-                static fn (ImmutableRecord $record) => $record->toArray(),
-                $returnValue,
-            );
+            if (empty($returnValue)) {
+                return $responseType::fromArray([$resultType => ['item' => $returnValue]]);
+            }
 
-            $returnValue = ['item' => $returnValue];
+            /** @var class-string<ImmutableRecord> $arrayClassName */
+            $arrayClassName = $this->arrayClassName($returnValue);
+            $returnValue = $arrayClassName::fromRecordData(['item' => $returnValue]);
         }
 
-        if ($returnValue instanceof ImmutableRecord) {
-            $returnValue = $returnValue->toArray();
-        }
-
-        return $responseType::fromArray(
-            [
-                sprintf('%sResult', $parameterName) => $returnValue,
-            ]
-        );
+        return $responseType::fromRecordData([$resultType => $returnValue]);
     }
+
+    /**
+     * @param array<int, ImmutableRecord> $returnValue
+     * @return class-string<ImmutableRecord>
+     */
+    abstract public function arrayClassName(array $returnValue): string;
 }
