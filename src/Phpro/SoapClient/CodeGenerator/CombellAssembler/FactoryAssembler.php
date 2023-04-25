@@ -67,6 +67,16 @@ final class FactoryAssembler implements AssemblerInterface
                             'return %s::class;',
                             $originalName
                         ),
+                        'docblock' => DocBlockGeneratorFactory::fromArray(
+                            [
+                                'tags' => [
+                                    [
+                                        'name' => 'return',
+                                        'description' => 'class-string<'. $originalName .'>',
+                                    ],
+                                ],
+                            ]
+                        ),
                     ]
                 )
             );
