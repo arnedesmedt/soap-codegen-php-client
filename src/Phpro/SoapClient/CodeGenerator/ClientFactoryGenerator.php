@@ -9,6 +9,10 @@ use Phpro\SoapClient\Soap\CombellDefaultEngineFactory;
 use Soap\ExtSoapEngine\ExtSoapOptions;
 use Phpro\SoapClient\Event\Subscriber\LogSubscriber;
 use Psr\Log\LoggerInterface;
+use Soap\ExtSoapEngine\Wsdl\Naming\Md5Strategy;
+use Soap\ExtSoapEngine\Wsdl\PermanentWsdlLoaderProvider;
+use Soap\Wsdl\Loader\FlatteningLoader;
+use Soap\Wsdl\Loader\StreamWrapperLoader;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Laminas\Code\Generator\ClassGenerator;
 use Laminas\Code\Generator\FileGenerator;
@@ -22,9 +26,14 @@ use Laminas\Code\Generator\MethodGenerator;
 class ClientFactoryGenerator implements GeneratorInterface
 {
     const BODY = <<<BODY
+\$provider = new PermanentWsdlLoaderProvider(
+    new FlatteningLoader(new StreamWrapperLoader()),
+    new Md5Strategy(),
+);
 \$engine = CombellDefaultEngineFactory::create(
     ExtSoapOptions::defaults(\$wsdl, [])
         ->withClassMap(%2\$s::getCollection())
+        ->withWsdlProvider(\$provider),
 );
 
 \$eventDispatcher ??= new EventDispatcher();
@@ -57,6 +66,10 @@ BODY;
         $class->addUse(EngineCaller::class);
         $class->addUse(LogSubscriber::class);
         $class->addUse(LoggerInterface::class);
+        $class->addUse(PermanentWsdlLoaderProvider::class);
+        $class->addUse(FlatteningLoader::class);
+        $class->addUse(StreamWrapperLoader::class);
+        $class->addUse(Md5Strategy::class);
         $class->addMethodFromGenerator(
             MethodGenerator::fromArray(
                 [
@@ -89,8 +102,14 @@ BODY;
                 [
                     'name' => 'createMock',
                     'static' => true,
-                    'body' => sprintf('return new %sMock(new \ADS\ClientMock\MockPersister(new ReturnValueTransformer()));', $context->getClientName()),
-                    'returnType' => sprintf('%sMock', $context->getClientNamespace() . '\\' . $context->getClientName()),
+                    'body' => sprintf(
+                        'return new %sMock(new \ADS\ClientMock\MockPersister(new ReturnValueTransformer()));',
+                        $context->getClientName()
+                    ),
+                    'returnType' => sprintf(
+                        '%sMock',
+                        $context->getClientNamespace() . '\\' . $context->getClientName()
+                    ),
                 ],
             ),
         );
