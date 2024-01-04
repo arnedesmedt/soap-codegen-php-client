@@ -2,21 +2,25 @@
 
 namespace Phpro\SoapClient\CodeGenerator;
 
+use Http\Client\Common\PluginClient;
 use Phpro\SoapClient\Caller\EngineCaller;
 use Phpro\SoapClient\Caller\EventDispatchingCaller;
 use Phpro\SoapClient\CodeGenerator\Context\ClientFactoryContext;
+use Phpro\SoapClient\Soap\ClientErrorPlugin;
 use Phpro\SoapClient\Soap\CombellDefaultEngineFactory;
 use Soap\ExtSoapEngine\ExtSoapOptions;
 use Phpro\SoapClient\Event\Subscriber\LogSubscriber;
 use Psr\Log\LoggerInterface;
 use Soap\ExtSoapEngine\Wsdl\Naming\Md5Strategy;
 use Soap\ExtSoapEngine\Wsdl\PermanentWsdlLoaderProvider;
+use Soap\Psr18Transport\Psr18Transport;
 use Soap\Wsdl\Loader\FlatteningLoader;
 use Soap\Wsdl\Loader\StreamWrapperLoader;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Laminas\Code\Generator\ClassGenerator;
 use Laminas\Code\Generator\FileGenerator;
 use Laminas\Code\Generator\MethodGenerator;
+use Symfony\Component\HttpClient\Psr18Client;
 
 /**
  * Class ClientBuilderGenerator
@@ -30,10 +34,22 @@ class ClientFactoryGenerator implements GeneratorInterface
     new FlatteningLoader(new StreamWrapperLoader()),
     new Md5Strategy(),
 );
+
+\$transport = Psr18Transport::createForClient(
+    new PluginClient(
+        new Psr18Client(),
+        [
+            new ClientErrorPlugin(),
+            ...\$plugins,
+        ],
+    ),
+);
+
 \$engine = CombellDefaultEngineFactory::create(
     ExtSoapOptions::defaults(\$wsdl, [])
         ->withClassMap(%2\$s::getCollection())
         ->withWsdlProvider(\$provider),
+    \$transport,
 );
 
 \$eventDispatcher ??= new EventDispatcher();
@@ -70,6 +86,10 @@ BODY;
         $class->addUse(FlatteningLoader::class);
         $class->addUse(StreamWrapperLoader::class);
         $class->addUse(Md5Strategy::class);
+        $class->addUse(Psr18Transport::class);
+        $class->addUse(PluginClient::class);
+        $class->addUse(Psr18Client::class);
+        $class->addUse(ClientErrorPlugin::class);
         $class->addMethodFromGenerator(
             MethodGenerator::fromArray(
                 [
@@ -91,6 +111,11 @@ BODY;
                             'name' => 'logger',
                             'type' => LoggerInterface::class,
                             'defaultvalue' => null,
+                        ],
+                        [
+                            'name' => 'plugins',
+                            'type' => 'array',
+                            'defaultvalue' => [],
                         ],
                     ],
                 ]
