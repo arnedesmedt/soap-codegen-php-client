@@ -2,6 +2,7 @@
 
 namespace Phpro\SoapClient\CodeGenerator;
 
+use Http\Client\Common\Plugin;
 use Http\Client\Common\PluginClient;
 use Phpro\SoapClient\Caller\EngineCaller;
 use Phpro\SoapClient\Caller\EventDispatchingCaller;
@@ -90,9 +91,11 @@ BODY;
         $class->addUse(PluginClient::class);
         $class->addUse(Psr18Client::class);
         $class->addUse(ClientErrorPlugin::class);
+        $class->addUse(Plugin::class);
         $class->addMethodFromGenerator(
             MethodGenerator::fromArray(
                 [
+                    'docblock' => ['tags' => [['name' => 'param', 'description' => 'array<Plugin> $plugins']]],
                     'name' => 'factory',
                     'static' => true,
                     'body' => sprintf(self::BODY, $context->getClientName(), $context->getClassmapName()),

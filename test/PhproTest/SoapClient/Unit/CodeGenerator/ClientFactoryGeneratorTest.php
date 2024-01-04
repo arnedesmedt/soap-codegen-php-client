@@ -36,9 +36,13 @@ use Soap\Psr18Transport\Psr18Transport;
 use Http\Client\Common\PluginClient;
 use Symfony\Component\HttpClient\Psr18Client;
 use Phpro\SoapClient\Soap\ClientErrorPlugin;
+use Http\Client\Common\Plugin;
 
 class MyclientFactory
 {
+    /**
+     * @param array<Plugin> \$plugins
+     */
     public static function factory(string \$wsdl, \Symfony\Component\EventDispatcher\EventDispatcher \$eventDispatcher = null, \Psr\Log\LoggerInterface \$logger = null, array \$plugins = []) : \App\Client\Myclient
     {
         \$provider = new PermanentWsdlLoaderProvider(
