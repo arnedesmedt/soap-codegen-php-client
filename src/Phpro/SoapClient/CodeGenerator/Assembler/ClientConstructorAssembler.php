@@ -33,19 +33,23 @@ class ClientConstructorAssembler implements AssemblerInterface
         try {
             $caller = $this->generateClassNameAndAddImport(Caller::class, $class);
             $class->addPropertyFromGenerator(
-                PropertyGenerator::fromArray([
+                PropertyGenerator::fromArray(
+                    [
                     'name' => 'caller',
                     'visibility' => PropertyGenerator::VISIBILITY_PRIVATE,
                     'omitdefaultvalue' => true,
-                    'docblock' => DocBlockGeneratorFactory::fromArray([
+                    'docblock' => DocBlockGeneratorFactory::fromArray(
+                        [
                         'tags' => [
                             [
                                 'name'        => 'var',
                                 'description' => $caller,
                             ],
                         ]
-                    ])
-                ])
+                        ]
+                    )
+                    ]
+                )
             );
             $class->addMethodFromGenerator(
                 MethodGenerator::fromArray(

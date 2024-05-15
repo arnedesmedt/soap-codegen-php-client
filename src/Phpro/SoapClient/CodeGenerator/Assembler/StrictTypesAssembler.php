@@ -24,13 +24,15 @@ class StrictTypesAssembler implements AssemblerInterface
     }
 
     /**
-     * @param ContextInterface&FileContext $context
+     * @param  ContextInterface&FileContext $context
      * @return void
      */
     public function assemble(ContextInterface $context)
     {
-        $context->getFileGenerator()->setDeclares([
+        $context->getFileGenerator()->setDeclares(
+            [
             DeclareStatement::strictTypes(1)
-        ]);
+            ]
+        );
     }
 }

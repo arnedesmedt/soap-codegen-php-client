@@ -13,7 +13,7 @@ use function Psl\Vec\map;
 final class UnionTypesCalculator
 {
     /**
-     * @param TypeMeta $meta
+     * @param  TypeMeta $meta
      * @return non-empty-string
      */
     public function __invoke(TypeMeta $meta): string
@@ -24,7 +24,7 @@ final class UnionTypesCalculator
                     map(
                         $meta->unions()->unwrapOr([]),
                         /**
-                         * @var array{type: non-empty-string, isList: bool} $union
+                         * @var    array{type: non-empty-string, isList: bool} $union
                          * @return non-empty-string
                          */
                         static function (array $union): string {

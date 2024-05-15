@@ -38,8 +38,8 @@ class ClientMethod
      * TypeModel constructor.
      *
      * @param non-empty-string $name
-     * @param array $params
-     * @param string $parameterNamespace
+     * @param array            $params
+     * @param string           $parameterNamespace
      */
     public function __construct(
         string $name,

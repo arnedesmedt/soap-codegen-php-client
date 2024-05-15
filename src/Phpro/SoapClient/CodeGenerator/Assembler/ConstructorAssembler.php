@@ -67,27 +67,38 @@ class ConstructorAssembler implements AssemblerInterface
     private function assembleConstructor(Type $type): MethodGenerator
     {
         $body = [];
-        $constructor = MethodGenerator::fromArray([
+        $constructor = MethodGenerator::fromArray(
+            [
             'name' => '__construct',
             'visibility' => MethodGenerator::VISIBILITY_PUBLIC,
-        ]);
-        $docblock = DocBlockGeneratorFactory::fromArray([
+            ]
+        );
+        $docblock = DocBlockGeneratorFactory::fromArray(
+            [
             'shortdescription' => 'Constructor'
-        ]);
+            ]
+        );
 
         foreach ($type->getProperties() as $property) {
             $body[] = sprintf('$this->%1$s = $%1$s;', $property->getName());
             $withTypeHints = $this->options->useTypeHints() ? ['type' => $property->getPhpType()] : [];
 
-            $constructor->setParameter(array_merge([
-                'name' => $property->getName(),
-            ], $withTypeHints));
+            $constructor->setParameter(
+                array_merge(
+                    [
+                        'name' => $property->getName(),
+                    ],
+                    $withTypeHints
+                )
+            );
 
             if ($this->options->useDocBlocks()) {
-                $docblock->setTag([
+                $docblock->setTag(
+                    [
                     'name' => 'param',
                     'description' => sprintf('%s $%s', $property->getDocBlockType(), $property->getName())
-                ]);
+                    ]
+                );
             }
         }
 

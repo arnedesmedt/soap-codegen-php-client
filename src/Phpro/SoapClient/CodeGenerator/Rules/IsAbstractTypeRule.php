@@ -55,7 +55,7 @@ class IsAbstractTypeRule implements RuleInterface
         if (null === $this->abstractTypes) {
             $this->abstractTypes = $this->metadata->getTypes()->reduce(
                 /**
-                 * @param list<string> $abstractTypes
+                 * @param  list<string> $abstractTypes
                  * @return list<string>
                  */
                 static function (array $abstractTypes, Type $type): array {

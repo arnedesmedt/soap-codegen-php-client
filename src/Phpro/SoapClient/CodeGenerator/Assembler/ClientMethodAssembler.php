@@ -229,9 +229,9 @@ class ClientMethodAssembler implements AssemblerInterface
     }
 
     /**
-     * @param non-empty-string $fqcn Fully qualified class name.
-     * @param ClassGenerator $class Class generator object.
-     * @param bool $prefixed
+     * @param non-empty-string $fqcn     Fully qualified class name.
+     * @param ClassGenerator   $class    Class generator object.
+     * @param bool             $prefixed
      *
      * @return non-empty-string
      */

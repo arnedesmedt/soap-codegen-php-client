@@ -41,7 +41,7 @@ class Filesystem
     }
 
     /**
-     * @param string $path
+     * @param  string $path
      * @return string
      */
     public function getFileContents(string $path): string
@@ -55,7 +55,7 @@ class Filesystem
 
     /**
      * @param string $path
-     * @param mixed $content
+     * @param mixed  $content
      */
     public function putFileContents(string $path, $content)
     {

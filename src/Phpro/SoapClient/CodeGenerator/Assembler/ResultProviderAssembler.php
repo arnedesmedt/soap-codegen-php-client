@@ -87,21 +87,25 @@ class ResultProviderAssembler implements AssemblerInterface
         $methodName = 'getResult';
         $class->removeMethod($methodName);
         $class->addMethodFromGenerator(
-            MethodGenerator::fromArray([
+            MethodGenerator::fromArray(
+                [
                 'name' => $methodName,
                 'parameters' => [],
                 'visibility' => MethodGenerator::VISIBILITY_PUBLIC,
                 'returntype' => ResultInterface::class,
                 'body' => $this->generateGetResultBody($property),
-                'docblock' => DocBlockGeneratorFactory::fromArray([
+                'docblock' => DocBlockGeneratorFactory::fromArray(
+                    [
                     'tags' => [
                         [
                             'name' => 'return',
                             'description' => $this->generateGetResultReturnTag($property)
                         ]
                     ]
-                ])
-            ])
+                    ]
+                )
+                ]
+            )
         );
     }
 

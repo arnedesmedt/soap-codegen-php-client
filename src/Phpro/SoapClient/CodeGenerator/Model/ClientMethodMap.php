@@ -32,9 +32,13 @@ class ClientMethodMap
      */
     public static function fromMetadata(string $parameterNamespace, MethodCollection $collection): self
     {
-        return new self($collection->map(function (Method $method) use ($parameterNamespace) {
-            return ClientMethod::fromMetadata($parameterNamespace, $method);
-        }));
+        return new self(
+            $collection->map(
+                function (Method $method) use ($parameterNamespace) {
+                    return ClientMethod::fromMetadata($parameterNamespace, $method);
+                }
+            )
+        );
     }
 
     /**

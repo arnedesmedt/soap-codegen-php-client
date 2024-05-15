@@ -45,7 +45,7 @@ class JsonSerializableAssembler implements AssemblerInterface
     }
 
     /**
-     * @param Type $type
+     * @param Type           $type
      * @param ClassGenerator $class
      *
      * @throws \Laminas\Code\Generator\Exception\InvalidArgumentException
@@ -55,18 +55,20 @@ class JsonSerializableAssembler implements AssemblerInterface
         $methodName = 'jsonSerialize';
         $class->removeMethod($methodName);
         $class->addMethodFromGenerator(
-            MethodGenerator::fromArray([
+            MethodGenerator::fromArray(
+                [
                 'name' => $methodName,
                 'parameters' => [],
                 'visibility' => MethodGenerator::VISIBILITY_PUBLIC,
                 'body' => $this->generateJsonSerializeBody($type, $class),
                 'returntype' => 'array',
-            ])
+                ]
+            )
         );
     }
 
     /**
-     * @param Type $type
+     * @param Type           $type
      * @param ClassGenerator $class
      *
      * @return string

@@ -55,7 +55,7 @@ class IsExtendingTypeRule implements RuleInterface
         if (null === $this->extendingTypes) {
             $this->extendingTypes = $this->metadata->getTypes()->reduce(
                 /**
-                 * @param list<string> $extendingTypes
+                 * @param  list<string> $extendingTypes
                  * @return list<string>
                  */
                 static function (array $extendingTypes, Type $type): array {

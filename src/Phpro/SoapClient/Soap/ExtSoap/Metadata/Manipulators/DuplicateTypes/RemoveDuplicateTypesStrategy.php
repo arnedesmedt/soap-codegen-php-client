@@ -17,12 +17,14 @@ final class RemoveDuplicateTypesStrategy implements TypesManipulatorInterface
     {
         $duplicateNames = (new DuplicateTypeNamesDetector())($types);
 
-        return $types->filter(static function (Type $type) use ($duplicateNames): bool {
-            return !in_array(
-                Normalizer::normalizeClassname(non_empty_string()->assert($type->getName())),
-                $duplicateNames,
-                true
-            );
-        });
+        return $types->filter(
+            static function (Type $type) use ($duplicateNames): bool {
+                return !in_array(
+                    Normalizer::normalizeClassname(non_empty_string()->assert($type->getName())),
+                    $duplicateNames,
+                    true
+                );
+            }
+        );
     }
 }

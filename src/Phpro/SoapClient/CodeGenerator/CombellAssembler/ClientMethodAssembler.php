@@ -20,6 +20,7 @@ use Phpro\SoapClient\CodeGenerator\Model\Parameter;
 use Phpro\SoapClient\Exception\AssemblerException;
 use Phpro\SoapClient\Type\MultiArgumentRequest;
 
+use SebastianBergmann\Type\VoidType;
 use function assert;
 use function in_array;
 
@@ -44,20 +45,12 @@ final class ClientMethodAssembler extends \Phpro\SoapClient\CodeGenerator\Assemb
             $phpMethodName = StringUtil::camelize($method->getMethodName());
             $param = $this->createParamsFromContext($context);
             $class->removeMethod($phpMethodName);
-            $isVoid = $method->getReturnType() === 'VoidType';
+            $isVoid = (bool) preg_match('/VoidType$/', $method->getReturnType()->getType());
 
-            $docblock = $context->getArgumentCount() > 1 ?
+            $docblock = $method->getParametersCount() > 1 ?
                 $this->generateMultiArgumentDocblock($context) :
                 $this->generateSingleArgumentDocblock($context);
             $methodBody = $this->generateMethodBody($class, $param, $method, $isVoid);
-
-//            $returnType = ltrim($method->getReturnType(), '\\');
-//            $nameSpacedReturnType = ltrim($method->getNamespacedReturnType(), '\\');
-//
-//            $class->addUse($nameSpacedReturnType);
-//            if ($param) {
-//                $class->addUse($param->getType());
-//            }
 
             $class->addMethodFromGenerator(
                 MethodGenerator::fromArray(
@@ -68,7 +61,7 @@ final class ClientMethodAssembler extends \Phpro\SoapClient\CodeGenerator\Assemb
                         'body' => $methodBody,
                         'returntype' => $isVoid
                             ? 'void'
-                            : $method->getNamespacedReturnType(),
+                            : $method->getReturnType()->getType(),
                         'docblock' => $docblock,
                     ]
                 )
@@ -97,18 +90,19 @@ final class ClientMethodAssembler extends \Phpro\SoapClient\CodeGenerator\Assemb
                 '$result = ($this->caller)(\'%s\', %s); assert($result instanceof %s); return $result;',
                 $method->getMethodName(),
                 $parameter,
-                $method->getNamespacedReturnType()
+                $method->getReturnType()->getType()
             );
     }
 
     private function createParamsFromContext(ClientMethodContext $context): ?ParameterGenerator
     {
-        if ($context->getArgumentCount() === 0) {
+        $method = $context->getMethod();
+        if ($method->getParametersCount() === 0) {
             return null;
         }
 
-        if ($context->getArgumentCount() === 1) {
-            $param = current($context->getMethod()->getParameters());
+        if ($method->getParametersCount() === 1) {
+            $param = current($method->getParameters());
             assert($param instanceof Parameter);
 
             return ParameterGenerator::fromArray($param->toArray());
@@ -127,7 +121,7 @@ final class ClientMethodAssembler extends \Phpro\SoapClient\CodeGenerator\Assemb
         $class = $context->getClass();
         $method = $context->getMethod();
         $description = ['MultiArgumentRequest with following params:' . GeneratorInterface::EOL];
-        foreach ($context->getMethod()->getParameters() as $parameter) {
+        foreach ($method->getParameters() as $parameter) {
             $description[] = $parameter->getType() . ' $' . $parameter->getName();
         }
 
@@ -139,7 +133,7 @@ final class ClientMethodAssembler extends \Phpro\SoapClient\CodeGenerator\Assemb
                     [
                         'name' => 'return',
                         'description' => $this->generateClassNameAndAddImport(
-                            $method->getNamespacedReturnType(),
+                            $method->getReturnType()->getType(),
                             $class,
                             true
                         ),
@@ -160,7 +154,7 @@ final class ClientMethodAssembler extends \Phpro\SoapClient\CodeGenerator\Assemb
                 [
                     'name' => 'return',
                     'description' => $this->generateClassNameAndAddImport(
-                        $method->getNamespacedReturnType(),
+                        $method->getReturnType()->getType(),
                         $class,
                         true
                     ),
@@ -187,7 +181,7 @@ final class ClientMethodAssembler extends \Phpro\SoapClient\CodeGenerator\Assemb
     }
 
     /**
-     * @param string $fqcn  Fully qualified class name.
+     * @param string         $fqcn  Fully qualified class name.
      * @param ClassGenerator $class Class generator object.
      *
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingAnyTypeHint

@@ -23,7 +23,7 @@ interface AssemblerInterface
     /**
      * Assembles pieces of code.
      *
-     * @param ContextInterface $context
+     * @param  ContextInterface $context
      * @throws AssemblerException
      */
     public function assemble(ContextInterface $context);

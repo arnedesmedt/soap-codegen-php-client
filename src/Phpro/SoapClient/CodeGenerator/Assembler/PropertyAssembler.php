@@ -54,15 +54,18 @@ class PropertyAssembler implements AssemblerInterface
                 $class->removeProperty($property->getName());
             }
 
-            $propertyGenerator = PropertyGenerator::fromArray([
+            $propertyGenerator = PropertyGenerator::fromArray(
+                [
                 'name' => $property->getName(),
                 'visibility' => $this->options->visibility(),
                 'omitdefaultvalue' => !$this->options->useOptionalValue(),
-            ]);
+                ]
+            );
 
             if ($this->options->useDocBlocks()) {
                 $propertyGenerator->setDocBlock(
-                    DocBlockGeneratorFactory::fromArray([
+                    DocBlockGeneratorFactory::fromArray(
+                        [
                         'longdescription' => $property->getMeta()->docs()->unwrapOr(''),
                         'tags' => [
                             [
@@ -70,7 +73,8 @@ class PropertyAssembler implements AssemblerInterface
                                 'description' => $property->getDocBlockType(),
                             ],
                         ]
-                    ])
+                        ]
+                    )
                 );
             }
 

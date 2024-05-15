@@ -11,11 +11,13 @@ final class ResponseTypesDetector
 {
     public function __invoke(MethodCollection $methods): array
     {
-        return array_unique(array_map(
-            static function (Method $method): string {
-                return $method->getReturnType()->getName();
-            },
-            iterator_to_array($methods)
-        ));
+        return array_unique(
+            array_map(
+                static function (Method $method): string {
+                    return $method->getReturnType()->getName();
+                },
+                iterator_to_array($methods)
+            )
+        );
     }
 }

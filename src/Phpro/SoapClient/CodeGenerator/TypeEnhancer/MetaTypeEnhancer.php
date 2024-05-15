@@ -17,7 +17,7 @@ final class MetaTypeEnhancer implements TypeEnhancer
     }
 
     /**
-     * @param non-empty-string $type
+     * @param  non-empty-string $type
      * @return non-empty-string
      */
     public function asDocBlockType(string $type): string
@@ -42,7 +42,7 @@ final class MetaTypeEnhancer implements TypeEnhancer
     }
 
     /**
-     * @param non-empty-string $type
+     * @param  non-empty-string $type
      * @return non-empty-string
      */
     public function asPhpType(string $type): string

@@ -26,6 +26,7 @@ class TraitAssembler implements AssemblerInterface
 
     /**
      * TraitAssembler constructor.
+     *
      * @param non-empty-string $traitName
      * @param non-empty-string $traitAlias
      */
@@ -36,7 +37,7 @@ class TraitAssembler implements AssemblerInterface
     }
 
     /**
-     * @param ContextInterface $context
+     * @param  ContextInterface $context
      * @return bool
      */
     public function canAssemble(ContextInterface $context): bool

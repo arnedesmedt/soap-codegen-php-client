@@ -2,10 +2,12 @@
 
 namespace Phpro\SoapClient\Console\Command;
 
-use Phpro\SoapClient\CodeGenerator\ClassMapGenerator;
+use Phpro\SoapClient\CodeGenerator\Model\Type;
 use Phpro\SoapClient\CodeGenerator\Model\TypeMap;
+use Phpro\SoapClient\CodeGenerator\TypeTraitGenerator;
 use Phpro\SoapClient\Console\Helper\ConfigHelper;
 use Phpro\SoapClient\Util\Filesystem;
+use SplFileInfo;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -20,10 +22,10 @@ use function Psl\Type\non_empty_string;
  *
  * @package Phpro\SoapClient\Console\Command
  */
-class GenerateClassmapCommand extends Command
+class GenerateTypesTraitCommand extends Command
 {
 
-    const COMMAND_NAME = 'generate:classmap';
+    const COMMAND_NAME = 'generate:types:trait';
 
     /**
      * @var Filesystem
@@ -36,13 +38,11 @@ class GenerateClassmapCommand extends Command
     private $output;
 
     /**
-     * GenerateClassmapCommand constructor.
-     *
      * @param Filesystem $filesystem
      */
     public function __construct(Filesystem $filesystem)
     {
-        parent::__construct();
+        parent::__construct(null);
         $this->filesystem = $filesystem;
     }
 
@@ -53,7 +53,7 @@ class GenerateClassmapCommand extends Command
     {
         $this
             ->setName(self::COMMAND_NAME)
-            ->setDescription('Generates a classmap based on WSDL.')
+            ->setDescription('Generates type traits based on WSDL.')
             ->addOption(
                 'config',
                 null,
@@ -64,8 +64,6 @@ class GenerateClassmapCommand extends Command
 
     /**
      * {@inheritdoc}
-     *
-     * @throws \Phpro\SoapClient\Exception\InvalidArgumentException
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -77,54 +75,41 @@ class GenerateClassmapCommand extends Command
             non_empty_string()->assert($config->getTypeNamespace()),
             $config->getEngine()->getMetadata()->getTypes()
         );
+        $generator = new TypeTraitGenerator($config->getRuleSet());
 
-        $generator = new ClassMapGenerator(
-            $config->getRuleSet(),
-            $config->getClassMapName(),
-            $config->getClassMapNamespace()
-        );
-        $path = $config->getClassMapDestination().DIRECTORY_SEPARATOR.$config->getClassMapName().'.php';
-        $this->handleClassmap($generator, $typeMap, $path);
+        $typesDestination = non_empty_string()->assert($config->getTypeDestination());
+        $typeSuffix = $config->getTypeSuffix();
+        foreach ($typeMap->getTypes() as $type) {
+            $fileInfo = $type->getFileInfo($typesDestination, $typeSuffix);
+            if ($this->handleType($generator, $type, $fileInfo)) {
+                $this->output->writeln(
+                    sprintf('Generated class %s to %s', $type->getFullName(), $fileInfo->getPathname())
+                );
+            }
+        }
 
-        $io->success('Generated classmap at ' . $path);
-        
+        $io->success('All SOAP types generated');
+
         return 0;
-    }
-
-
-    /**
-     * Generates one type class
-     *
-     * @param FileGenerator     $file
-     * @param ClassMapGenerator $generator
-     * @param TypeMap           $typeMap
-     * @param string            $path
-     */
-    protected function generateClassmap(
-        FileGenerator $file,
-        ClassMapGenerator $generator,
-        TypeMap $typeMap,
-        string $path
-    ) {
-        $code = $generator->generate($file, $typeMap);
-        $this->filesystem->putFileContents($path, $code);
     }
 
     /**
      * Try to create a class for a type.
      *
-     * @param ClassMapGenerator $generator
-     * @param TypeMap           $typeMap
-     * @param string            $path
-     *
+     * @param  TypeTraitGenerator $generator
+     * @param  Type               $type
+     * @param  SplFileInfo        $fileInfo
      * @return bool
      */
-    protected function handleClassmap(ClassMapGenerator $generator, TypeMap $typeMap, string $path): bool
+    protected function handleType(TypeTraitGenerator $generator, Type $type, SplFileInfo $fileInfo): bool
     {
-        // Try to create a new class:
+        // Generate type sub folders if needed
+        $this->filesystem->ensureDirectoryExists($fileInfo->getPath());
+
+        // Try to create a blanco class:
         try {
             $file = new FileGenerator();
-            $this->generateClassmap($file, $generator, $typeMap, $path);
+            $this->generateType($file, $generator, $type, $fileInfo);
         } catch (\Exception $e) {
             $this->output->writeln('<fg=red>'.$e->getMessage().'</fg=red>');
 
@@ -132,6 +117,28 @@ class GenerateClassmapCommand extends Command
         }
 
         return true;
+    }
+
+    /**
+     * Generates one type class
+     *
+     * @param FileGenerator      $file
+     * @param TypeTraitGenerator $generator
+     * @param Type               $type
+     * @param SplFileInfo        $fileInfo
+     */
+    protected function generateType(
+        FileGenerator $file,
+        TypeTraitGenerator $generator,
+        Type $type,
+        SplFileInfo $fileInfo
+    ) {
+        if ($this->filesystem->fileExists($fileInfo->getPathname())) {
+            return;
+        }
+
+        $code = $generator->generate($file, $type);
+        $this->filesystem->putFileContents($fileInfo->getPathname(), $code);
     }
 
     /**

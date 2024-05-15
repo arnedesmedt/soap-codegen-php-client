@@ -7,6 +7,7 @@ use Webmozart\Assert\Assert;
 
 /**
  * Class PropertyAssemblerOptions
+ *
  * @package Phpro\SoapClient\CodeGenerator\Assembler
  */
 class PropertyAssemblerOptions
@@ -36,11 +37,14 @@ class PropertyAssemblerOptions
 
     public function withVisibility(string $visibility): self
     {
-        Assert::inArray($visibility, [
-            PropertyGenerator::VISIBILITY_PRIVATE,
-            PropertyGenerator::VISIBILITY_PROTECTED,
-            PropertyGenerator::VISIBILITY_PUBLIC,
-        ]);
+        Assert::inArray(
+            $visibility,
+            [
+                PropertyGenerator::VISIBILITY_PRIVATE,
+                PropertyGenerator::VISIBILITY_PROTECTED,
+                PropertyGenerator::VISIBILITY_PUBLIC,
+            ]
+        );
 
         $new = clone $this;
         $new->visibility = $visibility;

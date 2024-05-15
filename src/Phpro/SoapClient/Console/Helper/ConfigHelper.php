@@ -18,6 +18,7 @@ class ConfigHelper extends Helper
 
     /**
      * ConfigHelper constructor.
+     *
      * @param Filesystem $filesystem
      */
     public function __construct(Filesystem $filesystem)
@@ -32,7 +33,8 @@ class ConfigHelper extends Helper
 
     /**
      * Attempts to load the configuration file, returns it on success
-     * @param InputInterface $input
+     *
+     * @param  InputInterface $input
      * @return ConfigInterface
      */
     public function load(InputInterface $input): ConfigInterface

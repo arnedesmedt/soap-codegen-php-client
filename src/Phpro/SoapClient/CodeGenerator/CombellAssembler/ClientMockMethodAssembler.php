@@ -7,6 +7,7 @@ namespace Phpro\SoapClient\CodeGenerator\CombellAssembler;
 use ADS\Util\StringUtil;
 use Laminas\Code\Generator\ClassGenerator;
 use Laminas\Code\Generator\DocBlockGenerator;
+use Laminas\Code\Generator\MethodGenerator;
 use Laminas\Code\Generator\ParameterGenerator;
 use Phpro\SoapClient\CodeGenerator\Assembler\ClientMethodAssembler;
 use Phpro\SoapClient\CodeGenerator\Context\ClientMethodContext;
@@ -14,12 +15,11 @@ use Phpro\SoapClient\CodeGenerator\Context\ContextInterface;
 use Phpro\SoapClient\CodeGenerator\GeneratorInterface;
 use Phpro\SoapClient\CodeGenerator\LaminasCodeFactory\DocBlockGeneratorFactory;
 use Phpro\SoapClient\CodeGenerator\Model\ClientMethod;
-use Phpro\SoapClient\CodeGenerator\Model\Parameter;
+use Phpro\SoapClient\CodeGenerator\Util\Normalizer;
 use Phpro\SoapClient\Exception\AssemblerException;
 use Phpro\SoapClient\Type\MultiArgumentRequest;
 
-use function assert;
-use function in_array;
+use function Psl\Type\non_empty_string;
 
 final class ClientMockMethodAssembler extends ClientMethodAssembler
 {
@@ -28,103 +28,73 @@ final class ClientMockMethodAssembler extends ClientMethodAssembler
      */
     public function assemble(ContextInterface $context): bool
     {
-        if (! $context instanceof ClientMethodContext) {
+        if (!$context instanceof ClientMethodContext) {
             throw new AssemblerException(
-                __METHOD__ . ' expects an ' . ClientMethodContext::class . ' as input ' . $context::class . ' given'
+                __METHOD__.' expects an '.ClientMethodContext::class.' as input '.get_class($context).' given'
             );
         }
 
         $class = $context->getClass();
-        $docBlockGenerator = $class->getDocBlock();
-        $tag = [
-            'name' => 'method',
-            'description' => sprintf(
-                'static void %s($response, ...$request)',
-                StringUtil::camelize($context->getMethod()->getMethodName())
-            ),
-        ];
+        $method = $context->getMethod();
 
-        if ($docBlockGenerator === null) {
-            $class->setDocBlock(DocBlockGeneratorFactory::fromArray(['tags' => [$tag]]));
+        try {
+            $phpMethodName = StringUtil::camelize($method->getMethodName());
+            $param = $this->createParamsFromContext($context);
+            $class->removeMethod($phpMethodName);
+            $docblock = $context->getMethod()->getParametersCount() > 1 ?
+                $this->generateMultiArgumentDocblock($context) :
+                $this->generateSingleArgumentDocblock($context);
+            $methodBody = $this->generateMethodBody($class, $param, $method);
 
-            return true;
+            $class->addMethodFromGenerator(
+                MethodGenerator::fromArray(
+                    [
+                        'name' => $phpMethodName,
+                        'parameters' => $param === null ? [] : [$param],
+                        'visibility' => MethodGenerator::VISIBILITY_PUBLIC,
+                        'body' => $methodBody,
+                        'returntype' => 'self',
+                        'docblock' => $docblock,
+                    ]
+                )
+            );
+        } catch (\Exception $e) {
+            throw AssemblerException::fromException($e);
         }
-
-        $docBlockGenerator->setTag($tag);
-
-//        $class->setExtendedClass(Client::class);
-//        $method = $context->getMethod();
-//
-//        try {
-//            $phpMethodName = StringUtil::camelize($method->getMethodName());
-//            $param = $this->createParamsFromContext($context);
-//            $class->removeMethod($phpMethodName);
-//            $isVoid = $method->getReturnType() === 'VoidType';
-//
-//            $docblock = $context->getArgumentCount() > 1 ?
-//                $this->generateMultiArgumentDocblock($context) :
-//                $this->generateSingleArgumentDocblock($context);
-//            $methodBody = $this->generateMethodBody($class, $param, $method, $isVoid);
-//
-////            $returnType = ltrim($method->getReturnType(), '\\');
-////            $nameSpacedReturnType = ltrim($method->getNamespacedReturnType(), '\\');
-////
-////            $class->addUse($nameSpacedReturnType);
-////            if ($param) {
-////                $class->addUse($param->getType());
-////            }
-//
-//            $class->addMethodFromGenerator(
-//                MethodGenerator::fromArray(
-//                    [
-//                        'name' => $phpMethodName,
-//                        'parameters' => $param === null ? [] : [$param],
-//                        'visibility' => MethodGenerator::VISIBILITY_PUBLIC,
-//                        'body' => $methodBody,
-//                        'returntype' => $isVoid
-//                            ? 'void'
-//                            : $method->getNamespacedReturnType(),
-//                        'docblock' => $docblock,
-//                    ]
-//                )
-//            );
-//            // phpcs:ignore SlevomatCodingStandard.Exceptions.ReferenceThrowableOnly.ReferencedGeneralException
-//        } catch (Exception $e) {
-//            throw AssemblerException::fromException($e);
-//        }
 
         return true;
     }
 
-    private function generateMethodBody(
-        ClassGenerator $class,
-        ?ParameterGenerator $param,
-        ClientMethod $method,
-        bool $isVoid
-    ): string {
-        $parameter = $param === null
-            ? 'new ' . $this->generateClassNameAndAddImport(MultiArgumentRequest::class, $class) . '([])'
-            : '$' . $param->getName();
-
-        return $isVoid
-            ? sprintf('($this->caller)(\'%s\', %s);', $method->getMethodName(), $parameter)
-            : sprintf(
-                '$result = ($this->caller)(\'%s\', %s); assert($result instanceof %s); return $result;',
-                $method->getMethodName(),
-                $parameter,
-                $method->getNamespacedReturnType()
-            );
+    /**
+     * @param ParameterGenerator|null $param
+     * @param ClientMethod $method
+     *
+     * @return string
+     */
+    private function generateMethodBody(ClassGenerator $class, ?ParameterGenerator $param, ClientMethod $method): string
+    {
+        return sprintf(
+            '($this->persister)(\'%s\', %s); return $this;',
+            StringUtil::camelize($method->getMethodName()),
+            $param === null
+                ? 'new '.$this->generateClassNameAndAddImport(MultiArgumentRequest::class, $class).'([])'
+                : '$'.$param->getName()
+        );
     }
 
+    /**
+     * @param ClientMethodContext $context
+     *
+     * @return ParameterGenerator|null
+     */
     private function createParamsFromContext(ClientMethodContext $context): ?ParameterGenerator
     {
-        if ($context->getArgumentCount() === 0) {
+        if ($context->getMethod()->getParametersCount() === 0) {
             return null;
         }
 
-        if ($context->getArgumentCount() === 1) {
+        if ($context->getMethod()->getParametersCount() === 1) {
             $param = current($context->getMethod()->getParameters());
-            assert($param instanceof Parameter);
 
             return ParameterGenerator::fromArray($param->toArray());
         }
@@ -137,13 +107,18 @@ final class ClientMockMethodAssembler extends ClientMethodAssembler
         );
     }
 
+    /**
+     * @param ClientMethodContext $context
+     *
+     * @return DocBlockGenerator
+     */
     private function generateMultiArgumentDocblock(ClientMethodContext $context): DocBlockGenerator
     {
         $class = $context->getClass();
         $method = $context->getMethod();
-        $description = ['MultiArgumentRequest with following params:' . GeneratorInterface::EOL];
+        $description = ['MultiArgumentRequest with following params:'. GeneratorInterface::EOL];
         foreach ($context->getMethod()->getParameters() as $parameter) {
-            $description[] = $parameter->getType() . ' $' . $parameter->getName();
+            $description[] = $parameter->getType().' $'.$parameter->getName();
         }
 
         return DocBlockGeneratorFactory::fromArray(
@@ -151,37 +126,22 @@ final class ClientMockMethodAssembler extends ClientMethodAssembler
                 'longdescription' => implode(GeneratorInterface::EOL, $description),
                 'tags' => [
                     ['name' => 'param', 'description' => MultiArgumentRequest::class],
-                    [
-                        'name' => 'return',
-                        'description' => $this->generateClassNameAndAddImport(
-                            $method->getNamespacedReturnType(),
-                            $class,
-                            true
-                        ),
-                    ],
                 ],
             ]
         );
     }
 
+    /**
+     * @param ClientMethodContext $context
+     *
+     * @return DocBlockGenerator
+     */
     private function generateSingleArgumentDocblock(ClientMethodContext $context): DocBlockGenerator
     {
         $method = $context->getMethod();
         $class = $context->getClass();
         $param = current($method->getParameters());
-
-        $data = [
-            'tags' => [
-                [
-                    'name' => 'return',
-                    'description' => $this->generateClassNameAndAddImport(
-                        $method->getNamespacedReturnType(),
-                        $class,
-                        true
-                    ),
-                ],
-            ],
-        ];
+        $data = ['tags' => []];
 
         if ($param) {
             array_unshift(
@@ -202,38 +162,32 @@ final class ClientMockMethodAssembler extends ClientMethodAssembler
     }
 
     /**
-     * @param string $fqcn  Fully qualified class name.
+     * @param non-empty-string $fqcn Fully qualified class name.
      * @param ClassGenerator $class Class generator object.
+     * @param bool $prefixed
      *
-     * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingAnyTypeHint
+     * @return string
      */
-    protected function generateClassNameAndAddImport(
-        string $fqcn,
-        ClassGenerator $class,
-        $prefixed = false
-    ): string {
+    protected function generateClassNameAndAddImport(string $fqcn, ClassGenerator $class, $prefixed = false): string
+    {
+        if (Normalizer::isKnownType($fqcn)) {
+            return $fqcn;
+        }
         $prefix = '';
         $fqcn = ltrim($fqcn, '\\');
-
-        if (preg_match('/VoidType$/', $fqcn)) {
-            return 'void';
-        }
-
         $parts = explode('\\', $fqcn);
         $className = array_pop($parts);
         if ($prefixed) {
             $prefix = array_pop($parts);
         }
-
         $classNamespace = implode('\\', $parts);
-        $currentNamespace = (string) $class->getNamespaceName();
+        $currentNamespace = (string)$class->getNamespaceName();
         if ($prefixed) {
-            $className = $prefix . '\\' . $className;
-            $fqcn = $classNamespace . '\\' . $prefix;
+            $className = $prefix.'\\'.$className;
+            $fqcn = $classNamespace.'\\'.$prefix;
         }
-
-        if ($classNamespace !== $currentNamespace || ! in_array($fqcn, $class->getUses(), true)) {
-            $class->addUse($fqcn);
+        if ($classNamespace !== $currentNamespace || !\in_array($fqcn, $class->getUses(), true)) {
+            $class->addUse(non_empty_string()->assert($fqcn));
         }
 
         return $className;

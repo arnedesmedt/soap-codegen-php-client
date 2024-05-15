@@ -37,7 +37,7 @@ class ConfigContext implements ContextInterface
     }
 
     /**
-     * @param string $wsdl
+     * @param  string $wsdl
      * @return ConfigContext
      */
     public function setWsdl(string $wsdl): self
