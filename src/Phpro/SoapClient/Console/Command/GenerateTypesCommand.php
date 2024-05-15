@@ -79,7 +79,7 @@ class GenerateTypesCommand extends Command
         $generator = new TypeGenerator($config->getRuleSet());
 
         $typesDestination = non_empty_string()->assert($config->getTypeDestination());
-        $typeSuffix = non_empty_string()->assert($config->getTypeSuffix());
+        $typeSuffix = $config->getTypeSuffix();
         foreach ($typeMap->getTypes() as $type) {
             $fileInfo = $type->getFileInfo($typesDestination, $typeSuffix);
             if ($this->handleType($generator, $type, $fileInfo)) {
@@ -97,9 +97,9 @@ class GenerateTypesCommand extends Command
     /**
      * Try to create a class for a type.
      *
-     * @param TypeGenerator $generator
-     * @param Type $type
-     * @param SplFileInfo $fileInfo
+     * @param  TypeGenerator $generator
+     * @param  Type          $type
+     * @param  SplFileInfo   $fileInfo
      * @return bool
      */
     protected function handleType(TypeGenerator $generator, Type $type, SplFileInfo $fileInfo): bool
@@ -136,8 +136,8 @@ class GenerateTypesCommand extends Command
      *
      * @param FileGenerator $file
      * @param TypeGenerator $generator
-     * @param Type $type
-     * @param SplFileInfo $fileInfo
+     * @param Type          $type
+     * @param SplFileInfo   $fileInfo
      */
     protected function generateType(FileGenerator $file, TypeGenerator $generator, Type $type, SplFileInfo $fileInfo)
     {

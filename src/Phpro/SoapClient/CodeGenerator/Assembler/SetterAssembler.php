@@ -62,14 +62,18 @@ class SetterAssembler implements AssemblerInterface
             $methodGenerator->setVisibility(MethodGenerator::VISIBILITY_PUBLIC);
             $methodGenerator->setBody(sprintf('$this->%1$s = $%1$s;', $property->getName()));
             if ($this->options->useDocBlocks()) {
-                $methodGenerator->setDocBlock(DocBlockGeneratorFactory::fromArray([
-                    'tags' => [
+                $methodGenerator->setDocBlock(
+                    DocBlockGeneratorFactory::fromArray(
+                        [
+                        'tags' => [
                         [
                             'name' => 'param',
                             'description' => sprintf('%s $%s', $property->getDocBlockType(), $property->getName()),
                         ],
-                    ],
-                ]));
+                        ],
+                        ]
+                    )
+                );
             }
 
             $class->addMethodFromGenerator($methodGenerator);

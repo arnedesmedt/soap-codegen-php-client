@@ -70,14 +70,18 @@ class GetterAssembler implements AssemblerInterface
             }
 
             if ($this->options->useDocBlocks()) {
-                $methodGenerator->setDocBlock(DocBlockGeneratorFactory::fromArray([
-                    'tags' => [
+                $methodGenerator->setDocBlock(
+                    DocBlockGeneratorFactory::fromArray(
+                        [
+                        'tags' => [
                         [
                             'name'        => 'return',
                             'description' => $property->getDocBlockType(),
                         ],
-                    ],
-                ]));
+                        ],
+                        ]
+                    )
+                );
             }
 
             $class->addMethodFromGenerator($methodGenerator);
@@ -87,7 +91,7 @@ class GetterAssembler implements AssemblerInterface
     }
 
     /**
-     * @param Property $property
+     * @param  Property $property
      * @return non-empty-string
      */
     public function getPrefix(Property $property): string

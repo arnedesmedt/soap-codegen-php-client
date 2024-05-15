@@ -28,14 +28,43 @@ use Phpro\SoapClient\Caller\EventDispatchingCaller;
 use Phpro\SoapClient\Caller\EngineCaller;
 use Phpro\SoapClient\Event\Subscriber\LogSubscriber;
 use Psr\Log\LoggerInterface;
+use Soap\ExtSoapEngine\Wsdl\PermanentWsdlLoaderProvider;
+use Soap\Wsdl\Loader\FlatteningLoader;
+use Soap\Wsdl\Loader\StreamWrapperLoader;
+use Soap\ExtSoapEngine\Wsdl\Naming\Md5Strategy;
+use Soap\Psr18Transport\Psr18Transport;
+use Http\Client\Common\PluginClient;
+use Http\Discovery\Psr18Client;
+use Phpro\SoapClient\Soap\ClientErrorPlugin;
+use Http\Client\Common\Plugin;
 
 class MyclientFactory
 {
-    public static function factory(string \$wsdl, \Symfony\Component\EventDispatcher\EventDispatcher \$eventDispatcher = null, \Psr\Log\LoggerInterface \$logger = null) : \App\Client\Myclient
+    /**
+     * @param array<Plugin> \$plugins
+     */
+    public static function factory(string \$wsdl, \Symfony\Component\EventDispatcher\EventDispatcher \$eventDispatcher = null, \Psr\Log\LoggerInterface \$logger = null, array \$plugins = []) : \App\Client\Myclient
     {
+        \$provider = new PermanentWsdlLoaderProvider(
+            new FlatteningLoader(new StreamWrapperLoader()),
+            new Md5Strategy(),
+        );
+
+        \$transport = Psr18Transport::createForClient(
+            new PluginClient(
+                new Psr18Client(),
+                [
+                    new ClientErrorPlugin(),
+                    ...\$plugins,
+                ],
+            ),
+        );
+
         \$engine = CombellDefaultEngineFactory::create(
             ExtSoapOptions::defaults(\$wsdl, [])
                 ->withClassMap(SomeClassmap::getCollection())
+                ->withWsdlProvider(\$provider),
+            \$transport,
         );
 
         \$eventDispatcher ??= new EventDispatcher();
@@ -46,6 +75,11 @@ class MyclientFactory
         }
 
         return new Myclient(\$caller);
+    }
+
+    public static function createMock() : \App\Client\MyclientMock
+    {
+        return new MyclientMock(new \ADS\ClientMock\MockPersister(new ReturnValueTransformer()));
     }
 }
 

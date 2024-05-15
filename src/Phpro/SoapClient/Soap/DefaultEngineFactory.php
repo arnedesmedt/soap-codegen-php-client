@@ -32,17 +32,19 @@ final class DefaultEngineFactory
             new IntersectDuplicateTypesStrategy()
         );
 
-        return new LazyEngine(static function () use ($options, $transport, $metadataOptions) {
-            $client = AbusedClient::createFromOptions($options);
-            $driver = ExtSoapDriver::createFromClient(
-                $client,
-                MetadataFactory::manipulated(
-                    new ExtSoapMetadata($client),
-                    $metadataOptions
-                )
-            );
+        return new LazyEngine(
+            static function () use ($options, $transport, $metadataOptions) {
+                $client = AbusedClient::createFromOptions($options);
+                $driver = ExtSoapDriver::createFromClient(
+                    $client,
+                    MetadataFactory::manipulated(
+                        new ExtSoapMetadata($client),
+                        $metadataOptions
+                    )
+                );
 
-            return new SimpleEngine($driver, $transport);
-        });
+                return new SimpleEngine($driver, $transport);
+            }
+        );
     }
 }

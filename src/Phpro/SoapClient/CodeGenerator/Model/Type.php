@@ -41,9 +41,9 @@ class Type
     /**
      * TypeModel constructor.
      *
-     * @param non-empty-string     $namespace
-     * @param non-empty-string     $xsdName
-     * @param Property[] $properties
+     * @param non-empty-string $namespace
+     * @param non-empty-string $xsdName
+     * @param Property[]       $properties
      */
     public function __construct(string $namespace, string $xsdName, array $properties, TypeMeta $meta)
     {

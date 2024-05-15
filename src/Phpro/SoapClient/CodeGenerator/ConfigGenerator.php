@@ -38,9 +38,9 @@ RULESET;
 EOENGINE;
 
     /**
-     * @param string $name
-     * @param string $value
-     * @param FileGenerator $file
+     * @param  string        $name
+     * @param  string        $value
+     * @param  FileGenerator $file
      * @return string
      */
     private function generateSetter(string $name, string $value, FileGenerator $file): string
@@ -49,8 +49,8 @@ EOENGINE;
     }
 
     /**
-     * @param FileGenerator $file
-     * @param string $ruleset
+     * @param  FileGenerator $file
+     * @param  string        $ruleset
      * @return string
      */
     private function parseIndentedRuleSet(FileGenerator $file, string $ruleset): string
@@ -65,8 +65,8 @@ EOENGINE;
     }
 
     /**
-     * @param FileGenerator $file
-     * @param ConfigContext $context
+     * @param  FileGenerator $file
+     * @param  ConfigContext $context
      * @return string
      */
     public function generate(FileGenerator $file, $context): string

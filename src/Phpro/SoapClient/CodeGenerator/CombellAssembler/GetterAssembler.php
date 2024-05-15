@@ -38,16 +38,14 @@ final class GetterAssembler extends \Phpro\SoapClient\CodeGenerator\Assembler\Ge
             $methodGenerator->setVisibility(MethodGenerator::VISIBILITY_PUBLIC);
             $methodGenerator->setBody(sprintf('return $this->%s;', $methodName));
 
-            $docBlockReturnType = $property->getType();
+            $docBlockReturnType = $property->getDocBlockType();
 
             if ($this->options->useReturnType()) {
-                $returnType = $property->getCodeReturnType();
+                $returnType = $property->getPhpType();
 
                 if ($returnType !== null && strpos($returnType, '?') !== 0 && $property->isNullable()) {
                     $returnType = '?' . $returnType;
                 }
-
-                $extra = [];
 
                 if (strpos($class->getName(), 'ArrayOf') === 0
                     && $property->getName() === 'item'

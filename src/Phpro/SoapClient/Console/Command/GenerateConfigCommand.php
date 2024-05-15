@@ -24,6 +24,7 @@ class GenerateConfigCommand extends Command
 
     /**
      * GenerateConfigCommand constructor.
+     *
      * @param Filesystem $filesystem
      */
     public function __construct(Filesystem $filesystem)

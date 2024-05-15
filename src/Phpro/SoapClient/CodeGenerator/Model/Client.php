@@ -29,9 +29,9 @@ class Client
     /**
      * TypeModel constructor.
      *
-     * @param non-empty-string $name
-     * @param non-empty-string $namespace
-     * @param ClientMethodMap $methods
+     * @param    non-empty-string $name
+     * @param    non-empty-string $namespace
+     * @param    ClientMethodMap  $methods
      * @internal param string $xsdName
      * @internal param Property[] $properties
      */

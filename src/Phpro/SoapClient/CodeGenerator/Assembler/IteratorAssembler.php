@@ -67,7 +67,8 @@ class IteratorAssembler implements AssemblerInterface
         $methodName = 'getIterator';
         $class->removeMethod($methodName);
         $class->addMethodFromGenerator(
-            MethodGenerator::fromArray([
+            MethodGenerator::fromArray(
+                [
                 'name' => $methodName,
                 'parameters' => [],
                 'visibility' => MethodGenerator::VISIBILITY_PUBLIC,
@@ -76,7 +77,8 @@ class IteratorAssembler implements AssemblerInterface
                     $firstProperty->getName()
                 ),
                 'returntype' => 'ArrayIterator',
-                'docblock' => DocBlockGeneratorFactory::fromArray([
+                'docblock' => DocBlockGeneratorFactory::fromArray(
+                    [
                     'tags' => [
                         [
                             'name' => 'return',
@@ -91,12 +93,16 @@ class IteratorAssembler implements AssemblerInterface
                             'description' => '\\ArrayIterator'.$arrayInfo,
                         ]
                     ]
-                ])
-            ])
+                    ]
+                )
+                ]
+            )
         );
 
-        $class->setDocBlock(DocBlockGeneratorFactory::fromArray([
-            'tags' => [
+        $class->setDocBlock(
+            DocBlockGeneratorFactory::fromArray(
+                [
+                'tags' => [
                 [
                     'name' => 'phpstan-implements',
                     'description' => '\\IteratorAggregate'.$arrayInfo,
@@ -105,7 +111,9 @@ class IteratorAssembler implements AssemblerInterface
                     'name' => 'psalm-implements',
                     'description' => '\\IteratorAggregate'.$arrayInfo,
                 ]
-            ]
-        ]));
+                ]
+                ]
+            )
+        );
     }
 }

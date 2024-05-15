@@ -64,7 +64,7 @@ class ExtendAssembler implements AssemblerInterface
     }
 
     /**
-     * @param ClassGenerator $class
+     * @param  ClassGenerator $class
      * @return bool
      */
     private function isExtendingItself(ClassGenerator $class): bool

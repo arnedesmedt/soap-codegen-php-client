@@ -57,18 +57,16 @@ final class FactoryAssembler implements AssemblerInterface
             );
 
             $class->addMethodFromGenerator(
-                MethodGenerator::fromArray(
-                    [
-                        'static' => true,
-                        'visibility' => MethodGenerator::VISIBILITY_PROTECTED,
-                        'name' => 'modelClass',
-                        'returnType' => 'string',
-                        'body' => sprintf(
-                            'return %s::class;',
-                            $originalName
-                        ),
-                    ]
-                )
+                (new MethodGenerator(
+                    name: 'modelClass',
+                    flags: MethodGenerator::FLAG_PROTECTED | MethodGenerator::FLAG_STATIC,
+                    body: sprintf(
+                        'return %s::class;',
+                        $originalName
+                    ),
+                    docBlock: sprintf('@return class-string<%s>', $originalName),
+                ))
+                    ->setReturnType('string'),
             );
             // phpcs:ignore SlevomatCodingStandard.Exceptions.ReferenceThrowableOnly.ReferencedGeneralException
         } catch (Exception $e) {

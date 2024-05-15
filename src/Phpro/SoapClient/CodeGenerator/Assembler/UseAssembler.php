@@ -28,7 +28,8 @@ class UseAssembler implements AssemblerInterface
 
     /**
      * UseAssembler constructor.
-     * @param non-empty-string $useName
+     *
+     * @param non-empty-string      $useName
      * @param non-empty-string|null $useAlias
      */
     public function __construct(string $useName, string $useAlias = null)
@@ -38,7 +39,7 @@ class UseAssembler implements AssemblerInterface
     }
 
     /**
-     * @param ContextInterface $context
+     * @param  ContextInterface $context
      * @return bool
      */
     public function canAssemble(ContextInterface $context): bool
@@ -71,7 +72,7 @@ class UseAssembler implements AssemblerInterface
     }
 
     /**
-     * @param ClassGenerator $class
+     * @param  ClassGenerator $class
      * @return bool
      */
     private function usesTheSameNamespace(ClassGenerator $class): bool

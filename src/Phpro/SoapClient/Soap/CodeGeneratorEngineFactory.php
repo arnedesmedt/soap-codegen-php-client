@@ -41,27 +41,29 @@ final class CodeGeneratorEngineFactory
             new IntersectDuplicateTypesStrategy()
         );
 
-        return new LazyEngine(static function () use (
-            $wsdlLocation,
-            $loader,
-            $metadataOptions,
-            $parserContext,
-            $preferredSoapVersion
-        ) {
-            $wsdl = (new Wsdl1Reader($loader))($wsdlLocation, $parserContext);
-            $metadataProvider = new Wsdl1MetadataProvider(
-                $wsdl,
-                ServiceSelectionCriteria::defaults()
-                    ->withAllowHttpPorts(false)
-                    ->withPreferredSoapVersion($preferredSoapVersion)
-            );
+        return new LazyEngine(
+            static function () use (
+                $wsdlLocation,
+                $loader,
+                $metadataOptions,
+                $parserContext,
+                $preferredSoapVersion
+            ) {
+                $wsdl = (new Wsdl1Reader($loader))($wsdlLocation, $parserContext);
+                $metadataProvider = new Wsdl1MetadataProvider(
+                    $wsdl,
+                    ServiceSelectionCriteria::defaults()
+                        ->withAllowHttpPorts(false)
+                        ->withPreferredSoapVersion($preferredSoapVersion)
+                );
 
-            return new SimpleEngine(
-                new PartialDriver(
-                    metadata: MetadataFactory::manipulated($metadataProvider->getMetadata(), $metadataOptions),
-                ),
-                new NoopTransport()
-            );
-        });
+                return new SimpleEngine(
+                    new PartialDriver(
+                        metadata: MetadataFactory::manipulated($metadataProvider->getMetadata(), $metadataOptions),
+                    ),
+                    new NoopTransport()
+                );
+            }
+        );
     }
 }

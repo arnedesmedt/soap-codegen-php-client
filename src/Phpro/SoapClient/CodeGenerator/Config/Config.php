@@ -75,12 +75,14 @@ final class Config implements ConfigInterface
 
     public function __construct()
     {
-        $this->ruleSet = new RuleSet([
+        $this->ruleSet = new RuleSet(
+            [
             new Rules\AssembleRule(new Assembler\PropertyAssembler()),
             new Rules\AssembleRule(new Assembler\ClassMapAssembler()),
             new Rules\AssembleRule(new Assembler\ClientConstructorAssembler()),
             new Rules\AssembleRule(new Assembler\ClientMethodAssembler())
-        ]);
+            ]
+        );
     }
 
     /**
@@ -195,7 +197,7 @@ final class Config implements ConfigInterface
     }
 
     /**
-     * @param string $clientName
+     * @param  string $clientName
      * @return $this
      */
     public function setClientName($clientName): self
@@ -218,7 +220,7 @@ final class Config implements ConfigInterface
     }
 
     /**
-     * @param string $clientNamespace
+     * @param  string $clientNamespace
      * @return Config
      */
     public function setClientNamespace($clientNamespace): self
@@ -241,7 +243,7 @@ final class Config implements ConfigInterface
     }
 
     /**
-     * @param string $clientDestination
+     * @param  string $clientDestination
      * @return Config
      */
     public function setClientDestination($clientDestination): self
@@ -264,7 +266,7 @@ final class Config implements ConfigInterface
     }
 
     /**
-     * @param string $typeDestination
+     * @param  string $typeDestination
      * @return Config
      */
     public function setTypeDestination($typeDestination): self
@@ -311,7 +313,7 @@ final class Config implements ConfigInterface
     }
 
     /**
-     * @param string $classMapName
+     * @param  string $classMapName
      * @return Config
      */
     public function setClassMapName(string $classMapName): self
@@ -322,7 +324,7 @@ final class Config implements ConfigInterface
     }
 
     /**
-     * @param string $classMapNamespace
+     * @param  string $classMapNamespace
      * @return Config
      */
     public function setClassMapNamespace(string $classMapNamespace): self
@@ -333,7 +335,7 @@ final class Config implements ConfigInterface
     }
 
     /**
-     * @param string $classMapDestination
+     * @param  string $classMapDestination
      * @return Config
      */
     public function setClassMapDestination(string $classMapDestination): self

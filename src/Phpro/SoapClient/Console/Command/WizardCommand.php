@@ -21,8 +21,7 @@ class WizardCommand extends Command
     {
         $this
             ->setName(self::COMMAND_NAME)
-            ->setDescription('Runs all generators to get you starting.')
-        ;
+            ->setDescription('Runs all generators to get you starting.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

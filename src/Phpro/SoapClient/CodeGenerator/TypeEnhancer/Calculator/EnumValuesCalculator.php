@@ -11,7 +11,7 @@ use function Psl\Vec\map;
 final class EnumValuesCalculator
 {
     /**
-     * @param TypeMeta $meta
+     * @param  TypeMeta $meta
      * @return non-empty-string
      */
     public function __invoke(TypeMeta $meta): string

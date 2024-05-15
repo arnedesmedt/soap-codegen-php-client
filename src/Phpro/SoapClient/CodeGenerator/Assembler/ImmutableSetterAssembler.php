@@ -74,8 +74,10 @@ class ImmutableSetterAssembler implements AssemblerInterface
                 $methodGenerator->setReturnType('static');
             }
             if ($this->options->useDocBlocks()) {
-                $methodGenerator->setDocBlock(DocBlockGeneratorFactory::fromArray([
-                    'tags' => [
+                $methodGenerator->setDocBlock(
+                    DocBlockGeneratorFactory::fromArray(
+                        [
+                        'tags' => [
                         [
                             'name' => 'param',
                             'description' => sprintf('%s $%s', $property->getDocBlockType(), $property->getName()),
@@ -84,8 +86,10 @@ class ImmutableSetterAssembler implements AssemblerInterface
                             'name' => 'return',
                             'description' => 'static',
                         ],
-                    ],
-                ]));
+                        ],
+                        ]
+                    )
+                );
             }
             $class->addMethodFromGenerator($methodGenerator);
         } catch (\Exception $e) {

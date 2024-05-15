@@ -28,7 +28,7 @@ class TypeMap
      * TypeMap constructor.
      *
      * @param non-empty-string $namespace
-     * @param array|Type[] $types
+     * @param array|Type[]     $types
      */
     public function __construct(string $namespace, array $types)
     {
@@ -43,9 +43,11 @@ class TypeMap
     {
         return new self(
             $namespace,
-            $types->map(function (MetadataType $type) use ($namespace) {
-                return Type::fromMetadata($namespace, $type);
-            })
+            $types->map(
+                function (MetadataType $type) use ($namespace) {
+                    return Type::fromMetadata($namespace, $type);
+                }
+            )
         );
     }
 

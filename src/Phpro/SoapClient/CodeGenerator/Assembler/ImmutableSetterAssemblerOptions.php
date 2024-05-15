@@ -4,6 +4,7 @@ namespace Phpro\SoapClient\CodeGenerator\Assembler;
 
 /**
  * Class ImmutableSetterAssemblerOptions
+ *
  * @package Phpro\SoapClient\CodeGenerator\Assembler
  */
 class ImmutableSetterAssemblerOptions

@@ -21,7 +21,7 @@ class ClientMethodContext implements ContextInterface
      * PropertyContext constructor.
      *
      * @param ClassGenerator $class
-     * @param ClientMethod $method
+     * @param ClientMethod   $method
      */
     public function __construct(ClassGenerator $class, ClientMethod $method)
     {

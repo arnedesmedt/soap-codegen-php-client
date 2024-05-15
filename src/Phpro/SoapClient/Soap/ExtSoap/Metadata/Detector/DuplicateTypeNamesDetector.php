@@ -20,11 +20,13 @@ final class DuplicateTypeNamesDetector
     {
         return array_keys(
             array_filter(
-                array_count_values($types->map(
-                    static function (Type $type): string {
-                        return Normalizer::normalizeClassname(non_empty_string()->assert($type->getName()));
-                    }
-                )),
+                array_count_values(
+                    $types->map(
+                        static function (Type $type): string {
+                            return Normalizer::normalizeClassname(non_empty_string()->assert($type->getName()));
+                        }
+                    )
+                ),
                 static function (int $count): bool {
                     return $count > 1;
                 }

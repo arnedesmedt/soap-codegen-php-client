@@ -27,7 +27,7 @@ class TypeMapRule implements RuleInterface
      * TypeMapRule constructor.
      *
      * @param RuleInterface[] $typeMap
-     * @param RuleInterface $defaultRule
+     * @param RuleInterface   $defaultRule
      */
     public function __construct(array $typeMap, RuleInterface $defaultRule)
     {

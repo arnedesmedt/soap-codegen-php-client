@@ -41,7 +41,7 @@ class FluentSetterAssembler implements AssemblerInterface
     }
 
     /**
-     * @param ContextInterface|PropertyContext $context
+     * @param  ContextInterface|PropertyContext $context
      * @throws AssemblerException
      */
     public function assemble(ContextInterface $context)
@@ -55,17 +55,21 @@ class FluentSetterAssembler implements AssemblerInterface
             $methodGenerator = new MethodGenerator($methodName);
             $methodGenerator->setParameters($this->getParameter($property));
             $methodGenerator->setVisibility(MethodGenerator::VISIBILITY_PUBLIC);
-            $methodGenerator->setBody(sprintf(
-                '$this->%1$s = $%1$s;%2$sreturn $this;',
-                $property->getName(),
-                $class::LINE_FEED
-            ));
+            $methodGenerator->setBody(
+                sprintf(
+                    '$this->%1$s = $%1$s;%2$sreturn $this;',
+                    $property->getName(),
+                    $class::LINE_FEED
+                )
+            );
             if ($this->options->useReturnType()) {
                 $methodGenerator->setReturnType('static');
             }
             if ($this->options->useDocBlocks()) {
-                $methodGenerator->setDocBlock(DocBlockGeneratorFactory::fromArray([
-                    'tags' => [
+                $methodGenerator->setDocBlock(
+                    DocBlockGeneratorFactory::fromArray(
+                        [
+                        'tags' => [
                         [
                             'name'        => 'param',
                             'description' => sprintf('%s $%s', $property->getDocBlockType(), $property->getName()),
@@ -74,8 +78,10 @@ class FluentSetterAssembler implements AssemblerInterface
                             'name'        => 'return',
                             'description' => '$this',
                         ],
-                    ],
-                ]));
+                        ],
+                        ]
+                    )
+                );
             }
             $class->addMethodFromGenerator($methodGenerator);
         } catch (\Exception $e) {

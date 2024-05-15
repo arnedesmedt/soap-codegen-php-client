@@ -29,6 +29,7 @@ class GenerateClientFactoryCommand extends Command
 
     /**
      * GenerateClientBuilderCommand constructor.
+     *
      * @param Filesystem $filesystem
      */
     public function __construct(Filesystem $filesystem)
