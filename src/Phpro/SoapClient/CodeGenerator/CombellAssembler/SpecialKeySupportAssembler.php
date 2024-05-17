@@ -32,29 +32,37 @@ final class SpecialKeySupportAssembler implements AssemblerInterface
 
         $class = $context->getClass();
         $class->setImplementedInterfaces([SpecialKeySupport::class]);
+        $properties = $class->getProperties();
+
+        if (empty($properties)) {
+            return;
+        }
+
+        $firstProperty = reset($properties);
+
 
         $class->addMethods(
             [
                 (new MethodGenerator(
-                    name: 'converetKeyForRecord',
+                    name: 'convertKeyForRecord',
                     parameters: [
                         [
                             'name' => 'key',
                             'type' => 'string',
                         ],
                     ],
-                    body: '',
+                    body: sprintf("return '%s';", $firstProperty->getName()),
                 ))
                     ->setReturnType('string'),
                 (new MethodGenerator(
-                    name: 'converetKeyForArray',
+                    name: 'convertKeyForArray',
                     parameters: [
                         [
                             'name' => 'key',
                             'type' => 'string',
                         ],
                     ],
-                    body: '',
+                    body: sprintf("return '%s';", StringUtil::camelize($firstProperty->getName())),
                 ))
                     ->setReturnType('string'),
             ],
