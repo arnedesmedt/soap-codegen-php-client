@@ -31,7 +31,8 @@ final class SpecialKeySupportAssembler implements AssemblerInterface
         assert($context instanceof TypeContext);
 
         $class = $context->getClass();
-        $class->setImplementedInterfaces([SpecialKeySupport::class]);
+        $interfaces = $class->getImplementedInterfaces();
+        $class->setImplementedInterfaces([...$interfaces, SpecialKeySupport::class]);
 
         $class->addMethods(
             [
