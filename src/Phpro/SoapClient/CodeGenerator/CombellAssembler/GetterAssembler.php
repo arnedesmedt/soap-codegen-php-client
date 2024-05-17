@@ -36,7 +36,7 @@ final class GetterAssembler extends \Phpro\SoapClient\CodeGenerator\Assembler\Ge
 
             $methodGenerator = new MethodGenerator($methodName);
             $methodGenerator->setVisibility(MethodGenerator::VISIBILITY_PUBLIC);
-            $methodGenerator->setBody(sprintf('return $this->%s;', $methodName));
+            $methodGenerator->setBody(sprintf('return $this->%s;', $property->getName()));
 
             $docBlockReturnType = $property->getDocBlockType();
 
