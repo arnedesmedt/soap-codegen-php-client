@@ -32,14 +32,6 @@ final class SpecialKeySupportAssembler implements AssemblerInterface
 
         $class = $context->getClass();
         $class->setImplementedInterfaces([SpecialKeySupport::class]);
-        $properties = $class->getProperties();
-
-        if (empty($properties)) {
-            return;
-        }
-
-        $firstProperty = reset($properties);
-
 
         $class->addMethods(
             [
@@ -51,7 +43,7 @@ final class SpecialKeySupportAssembler implements AssemblerInterface
                             'type' => 'string',
                         ],
                     ],
-                    body: sprintf("return '%s';", $firstProperty->getName()),
+                    body: '',
                 ))
                     ->setReturnType('string'),
                 (new MethodGenerator(
@@ -62,7 +54,7 @@ final class SpecialKeySupportAssembler implements AssemblerInterface
                             'type' => 'string',
                         ],
                     ],
-                    body: sprintf("return '%s';", StringUtil::camelize($firstProperty->getName())),
+                    body: '',
                 ))
                     ->setReturnType('string'),
             ],
