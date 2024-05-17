@@ -36,7 +36,7 @@ final class PropertyAssembler extends \Phpro\SoapClient\CodeGenerator\Assembler\
             }
 
             $propertyGenerator = [
-                'name' => StringUtil::camelize($property->getName()),
+                'name' => $property->getName(),
                 'visibility' => $this->visibility,
                 'omitdefaultvalue' => true,
             ];
