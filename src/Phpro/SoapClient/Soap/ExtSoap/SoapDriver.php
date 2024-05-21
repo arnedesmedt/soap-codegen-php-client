@@ -70,35 +70,12 @@ final class SoapDriver implements Driver
         $decoded = $this->decoder->decode($method, $response);
         assert(is_object($decoded));
 
-        $currentProperties = get_object_vars($decoded);
         $reflectionClass = new ReflectionClass($decoded);
-
-        $data = [];
-        foreach ($currentProperties as $propertyName => $propertyValue) {
-            if ($reflectionClass->hasProperty($propertyName)) {
-                continue;
-            }
-
-            $camelizedProperty = lcfirst(
-                str_replace(
-                    '_',
-                    '',
-                    ucwords($propertyName, '_')
-                )
-            );
-
-            if (! $reflectionClass->hasProperty($camelizedProperty)) {
-                continue;
-            }
-
-            $data[$camelizedProperty] = $decoded->{$propertyName};
-            unset($decoded->{$propertyName});
-        }
 
         /** @var class-string<ImmutableRecord> $class */
         $class = $reflectionClass->getName();
 
-        return $class::fromRecordData($data);
+        return $class::fromRecordData((array) $decoded);
     }
 
     /**
