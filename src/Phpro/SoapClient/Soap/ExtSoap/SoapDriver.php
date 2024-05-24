@@ -65,12 +65,19 @@ final class SoapDriver implements Driver
         );
     }
 
-    public function decode(string $method, SoapResponse $response): ImmutableRecord
+    public function decode(string $method, SoapResponse $response)
     {
         $decoded = $this->decoder->decode($method, $response);
-        assert(is_object($decoded));
+
+        if (! is_object($decoded)) {
+            return $decoded;
+        }
 
         $reflectionClass = new ReflectionClass($decoded);
+
+        if (! $reflectionClass->implementsInterface(ImmutableRecord::class)) {
+            return $decoded;
+        }
 
         /** @var class-string<ImmutableRecord> $class */
         $class = $reflectionClass->getName();
